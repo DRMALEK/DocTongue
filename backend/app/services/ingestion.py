@@ -11,9 +11,8 @@ from app.services.chunking import PageContent, TextChunk, split_pages_into_chunk
 
 SUPPORTED_EXTENSIONS = {
     ".pdf": "application/pdf",
-    ".txt": "text/plain",
-    ".md": "text/markdown",
 }
+MAX_UPLOAD_BYTES = 50 * 1024 * 1024
 
 
 class DocumentProcessingError(Exception):
@@ -40,11 +39,13 @@ async def persist_and_process_upload(
 
     extension = Path(filename).suffix.lower()
     if extension not in SUPPORTED_EXTENSIONS:
-        raise DocumentProcessingError("Unsupported file type. Upload a PDF, TXT, or MD file.")
+        raise DocumentProcessingError("Unsupported file type. Upload a PDF file.")
 
     payload = await file.read()
     if not payload:
         raise DocumentProcessingError("The uploaded file is empty.")
+    if len(payload) > MAX_UPLOAD_BYTES:
+        raise DocumentProcessingError("File too large. Maximum size is 50 MB.")
 
     document_id = str(uuid.uuid4())
     stored_name = f"{document_id}{extension}"
@@ -80,12 +81,11 @@ def delete_stored_file(path: Path) -> None:
 
 
 def _extract_pages(path: Path, extension: str) -> list[PageContent]:
-    if extension == ".pdf":
-        reader = PdfReader(str(path))
-        pages: list[PageContent] = []
-        for index, page in enumerate(reader.pages, start=1):
-            pages.append(PageContent(text=page.extract_text() or "", page_number=index))
-        return pages
+    if extension != ".pdf":
+        raise DocumentProcessingError("Unsupported file type. Upload a PDF file.")
 
-    text = path.read_text(encoding="utf-8")
-    return [PageContent(text=text, page_number=1)]
+    reader = PdfReader(str(path))
+    pages: list[PageContent] = []
+    for index, page in enumerate(reader.pages, start=1):
+        pages.append(PageContent(text=page.extract_text() or "", page_number=index))
+    return pages

@@ -7,6 +7,8 @@ import { DocumentPanel } from "@/components/document-panel";
 import { askQuestion, fetchDocuments, removeDocument, uploadDocument } from "@/lib/api";
 import { ChatMessage, Citation, DocumentSummary } from "@/lib/types";
 
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+
 export default function Home() {
   const [documents, setDocuments] = useState<DocumentSummary[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -41,6 +43,13 @@ export default function Home() {
     setDocumentError(null);
     try {
       for (const file of files) {
+        const extension = file.name.split(".").pop()?.toLowerCase();
+        if (extension !== "pdf" && file.type !== "application/pdf") {
+          throw new Error("Unsupported file type. Upload a PDF file.");
+        }
+        if (file.size > MAX_UPLOAD_BYTES) {
+          throw new Error("File too large. Maximum size is 50 MB.");
+        }
         await uploadDocument(file);
       }
       await loadDocuments();

@@ -25,7 +25,7 @@ export function DocumentPanel({
 }: DocumentPanelProps) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const uploadLabel = !selectedFiles.length
-    ? "Choose files"
+    ? "Choose PDF"
     : selectedFiles.length === 1
       ? selectedFiles[0].name
       : `${selectedFiles.length} files selected`;
@@ -59,11 +59,12 @@ export function DocumentPanel({
       <form className="mt-4 space-y-3" onSubmit={handleSubmit}>
         <label className="flex cursor-pointer flex-col items-center justify-center rounded-full border border-[#3a404a] bg-[#20252c] px-4 py-2 text-center transition hover:bg-[#242a33]">
           <span className="text-sm font-medium text-slate-100">+ {uploadLabel}</span>
+          <span className="mt-1 text-xs text-slate-400">PDF only, max 50 MB</span>
           <input
             className="sr-only"
             type="file"
             name="files"
-            accept=".pdf,.txt,.md,application/pdf,text/plain,text/markdown"
+            accept=".pdf,application/pdf"
             multiple
             onChange={(event) => {
               setSelectedFiles(Array.from(event.target.files ?? []));

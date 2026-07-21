@@ -9,6 +9,7 @@ from app.core.dependencies import (
 )
 from app.models.schemas import ChatRequest, ChatResponse
 from app.services.chat_memory import ChatMemoryStore
+from app.services.guardrails import validate_chat_question
 from app.services.llm import AnswerGenerator
 from app.services.retrieval import answer_question
 from app.services.vector_store import VectorStore
@@ -25,6 +26,10 @@ def chat(
     answer_generator: AnswerGenerator = Depends(get_answer_generator),
     chat_memory_store: ChatMemoryStore = Depends(get_chat_memory_store),
 ) -> ChatResponse:
+    violation = validate_chat_question(payload.question)
+    if violation:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=violation)
+
     try:
         return answer_question(
             question=payload.question,

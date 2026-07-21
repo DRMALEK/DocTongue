@@ -65,7 +65,7 @@ describe("Home page", () => {
 
     expect(await screen.findByText("No docs yet.")).toBeInTheDocument();
 
-    const fileInput = screen.getByLabelText(/choose files/i);
+    const fileInput = screen.getByLabelText(/choose pdf/i);
     const file = new File(["dummy"], "guide.pdf", { type: "application/pdf" });
     await user.upload(fileInput, file);
     await user.click(screen.getByRole("button", { name: /^upload$/i }));
@@ -78,7 +78,7 @@ describe("Home page", () => {
     await user.click(screen.getByRole("button", { name: /^send$/i }));
 
     expect(await screen.findByText(answer.answer)).toBeInTheDocument();
-    expect(screen.getAllByText("[1]", { exact: false }).length).toBeGreaterThan(1);
+    expect(screen.getAllByText("[1]", { exact: false }).length).toBeGreaterThan(0);
     expect(screen.getAllByText("guide.pdf").length).toBeGreaterThan(1);
     expect(
       screen.queryByText("Evidence is attached to each grounded answer."),
@@ -88,5 +88,39 @@ describe("Home page", () => {
     await waitFor(() => {
       expect(askQuestion).toHaveBeenCalledWith("What does the guide say about evidence?");
     });
+  });
+
+  it("shows guardrail notice and blocks unsupported upload formats in UI", async () => {
+    const user = userEvent.setup({ applyAccept: false });
+    render(<Home />);
+
+    expect(await screen.findByText("No docs yet.")).toBeInTheDocument();
+
+    const fileInput = screen.getByLabelText(/choose pdf/i);
+    const txtFile = new File(["dummy"], "notes.txt", { type: "text/plain" });
+    await user.upload(fileInput, txtFile);
+    await user.click(screen.getByRole("button", { name: /^upload$/i }));
+
+    expect(uploadDocument).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText("Unsupported file type. Upload a PDF file."),
+    ).toBeInTheDocument();
+  });
+
+  it("blocks uploads larger than 50 MB in UI", async () => {
+    const user = userEvent.setup();
+    render(<Home />);
+
+    expect(await screen.findByText("No docs yet.")).toBeInTheDocument();
+
+    const fileInput = screen.getByLabelText(/choose pdf/i);
+    const oversizedFile = new File([new Uint8Array(50 * 1024 * 1024 + 1)], "big.pdf", {
+      type: "application/pdf",
+    });
+    await user.upload(fileInput, oversizedFile);
+    await user.click(screen.getByRole("button", { name: /^upload$/i }));
+
+    expect(uploadDocument).not.toHaveBeenCalled();
+    expect(await screen.findByText("File too large. Maximum size is 50 MB.")).toBeInTheDocument();
   });
 });

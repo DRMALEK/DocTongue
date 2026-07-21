@@ -44,8 +44,14 @@ export function ChatPanel({
       </div>
 
       <div className="mt-3 flex min-h-0 flex-1 flex-col space-y-3 overflow-y-auto rounded-lg border border-[#343a43] bg-[#232830] p-3">
+        {error ? (
+          <div className="rounded-lg border border-red-400/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+            {error}
+          </div>
+        ) : null}
+
         {!messages.length ? (
-          <div className="flex min-h-[18rem] items-center justify-center rounded-lg border border-[#343a43] bg-[#252a31] px-4 py-6 text-center text-sm text-slate-400">
+          <div className="flex min-h-[18rem] items-center justify-center px-4 py-6 text-center text-base text-slate-400">
             Ask a question after indexing documents.
           </div>
         ) : null}

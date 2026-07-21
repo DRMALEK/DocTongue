@@ -1,14 +1,17 @@
 # DocTongue
 
-DocTongue is a simple full-stack document Q&A application. Users upload PDFs or text files into a shared collection, ask questions in a chat-style interface, and receive answers grounded only in retrieved document content with visible supporting evidence.
+DocTongue is a simple full-stack document Q&A application. Users upload PDFs into a shared collection, ask questions in a chat-style interface, and receive answers grounded only in retrieved document content with visible supporting evidence.
+
+![DocTongue app screenshot](Screenshot%202026-07-21%20175709.png)
 
 ## Features
 
-- Upload and process PDFs, TXT, and Markdown files
+- Upload and process PDF files (max 50 MB per file)
 - Search across multiple documents in a single shared collection
 - Chat-style grounded Q&A
 - Sliding window chat memory (last 3 chat turns with question and answer) with query reformulation before retrieval
 - Visible citations with filename, page number, excerpt, and score
+- Input guardrails for prompt-injection attempts and restricted explicit sexual content
 - Document listing and deletion
 - Basic backend tests for chunking and API flows
 
@@ -94,6 +97,11 @@ Returns the indexed document list.
 
 Accepts a multipart file upload and indexes one document.
 
+Constraints:
+
+- Only PDF files are supported.
+- Maximum upload size is 50 MB.
+
 ### `DELETE /api/documents/{document_id}`
 
 Deletes a document from local storage and the vector store.
@@ -112,6 +120,11 @@ Accepts a JSON body like:
 Returns a grounded answer and citation list.
 
 `session_id` is optional and defaults to `default`. Provide a stable `session_id` per user/client to enable multi-turn memory.
+
+Guardrails:
+
+- Requests that attempt to override hidden/system instructions are rejected.
+- Requests for explicit sexual/nudity content are rejected.
 
 ### Optional: run Redis locally
 
