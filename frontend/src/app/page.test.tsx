@@ -78,8 +78,13 @@ describe("Home page", () => {
     await user.click(screen.getByRole("button", { name: /^send$/i }));
 
     expect(await screen.findByText(answer.answer)).toBeInTheDocument();
-    expect(screen.getByText("Evidence is attached to each grounded answer.")).toBeInTheDocument();
-    expect(screen.getByText(/page 2/i)).toBeInTheDocument();
+    expect(screen.getByText("References")).toBeInTheDocument();
+    expect(screen.getAllByText("[1]", { exact: false }).length).toBeGreaterThan(1);
+    expect(screen.getAllByText("guide.pdf").length).toBeGreaterThan(1);
+    expect(
+      screen.queryByText("Evidence is attached to each grounded answer."),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/page 2/i)).not.toBeInTheDocument();
 
     await waitFor(() => {
       expect(askQuestion).toHaveBeenCalledWith("What does the guide say about evidence?");

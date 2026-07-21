@@ -2,14 +2,6 @@
 
 DocTongue is a simple full-stack document Q&A application. Users upload PDFs or text files into a shared collection, ask questions in a chat-style interface, and receive answers grounded only in retrieved document content with visible supporting evidence.
 
-## Stack
-
-- Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS v4
-- Backend: FastAPI, Python 3.12
-- Document parsing: PyPDF
-- Retrieval: local chunking, embeddings, ChromaDB vector search
-- LLM integration: provider-agnostic answer generation through LiteLLM, with a local stub mode for zero-key local development
-
 ## Features
 
 - Upload and process PDFs, TXT, and Markdown files
@@ -19,6 +11,14 @@ DocTongue is a simple full-stack document Q&A application. Users upload PDFs or 
 - Document listing and deletion
 - Basic backend tests for chunking and API flows
 
+## Stack
+
+- Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS v4
+- Backend: FastAPI, Python 3.12
+- Document parsing: PyPDF
+- Retrieval: local chunking, embeddings, ChromaDB vector search
+- LLM integration: provider-agnostic answer generation through LiteLLM, with a local stub mode for zero-key local development
+
 ## Architecture
 
 The repository is split into two applications:
@@ -26,21 +26,6 @@ The repository is split into two applications:
 - `frontend/`: the Next.js interface for document upload, collection management, and chat
 - `backend/`: the FastAPI service that handles ingestion, chunking, embeddings, Chroma persistence, retrieval, and answer generation
 
-### Backend flow
-
-1. A file upload hits `POST /api/documents`.
-2. The backend validates the file type and size, stores the original file locally, and extracts readable text.
-3. Extracted text is chunked with overlap and embedded.
-4. Chunks and metadata are stored in ChromaDB.
-5. A chat question hits `POST /api/chat`.
-6. The question is embedded, relevant chunks are retrieved, and the answer generator returns a grounded answer.
-7. The API returns the answer plus citations for UI rendering.
-
-### Grounding behavior
-
-- Retrieval is limited to indexed documents only.
-- Answers include explicit supporting evidence cards in the UI.
-- If retrieval does not provide enough support, the backend returns a grounded fallback instead of guessing.
 
 ## Repository structure
 

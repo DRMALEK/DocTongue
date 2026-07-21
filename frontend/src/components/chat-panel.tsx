@@ -14,6 +14,17 @@ type ChatPanelProps = {
   onAsk: (question: string) => Promise<void>;
 };
 
+function buildCitationMarkers(message: ChatMessage): string {
+  if (message.role !== "assistant" || !message.citations?.length) {
+    return "";
+  }
+
+  const uniqueSources = Array.from(
+    new Set(message.citations.map((citation) => citation.filename)),
+  );
+  return uniqueSources.map((_, index) => `[${index + 1}]`).join("");
+}
+
 export function ChatPanel({
   messageCount,
   hasDocuments,
@@ -82,6 +93,11 @@ export function ChatPanel({
             </div>
             <p className="mt-3 whitespace-pre-wrap text-sm leading-6">
               {message.content}
+              {message.role === "assistant" && message.citations?.length ? (
+                <sup className="ml-1 align-super text-[0.65rem] font-semibold tracking-[0.08em] text-slate-500">
+                  {buildCitationMarkers(message)}
+                </sup>
+              ) : null}
             </p>
             {message.role === "assistant" && message.citations?.length ? (
               <SourceCitations citations={message.citations} />
