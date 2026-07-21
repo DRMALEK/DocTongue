@@ -1,4 +1,4 @@
-# DocTongue-2
+# DocTongue
 
 DocTongue is a simple full-stack document Q&A application. Users upload PDFs or text files into a shared collection, ask questions in a chat-style interface, and receive answers grounded only in retrieved document content with visible supporting evidence.
 
