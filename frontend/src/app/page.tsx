@@ -104,53 +104,49 @@ export default function Home() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-8 sm:px-6 lg:px-8">
-      <section className="relative overflow-hidden rounded-[2.5rem] border border-white/70 bg-white/80 px-6 py-10 shadow-[0_30px_120px_rgba(15,23,42,0.12)] backdrop-blur sm:px-8 lg:px-10">
-        <div className="absolute inset-x-0 top-0 h-28 bg-[radial-gradient(circle_at_top_left,_rgba(249,115,22,0.22),_transparent_58%),radial-gradient(circle_at_top_right,_rgba(15,23,42,0.12),_transparent_45%)]" />
-        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.26em] text-[#b04d1a]">
-              DocTongue
-            </p>
-            <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
-              Grounded answers for your private document collection.
-            </h1>
-            <p className="mt-4 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
-              Upload PDFs or text files, search across the whole collection, and
-              inspect the exact passages used to answer each question.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-3 self-start text-sm text-slate-700 sm:self-auto">
-            <div className="rounded-[1.5rem] bg-[#fff4ec] px-4 py-3">
-              <div className="font-semibold text-slate-950">{documents.length}</div>
-              <div className="mt-1">Indexed documents</div>
-            </div>
-            <div className="rounded-[1.5rem] bg-slate-900 px-4 py-3 text-slate-100">
-              <div className="font-semibold">{messages.length}</div>
-              <div className="mt-1">Chat turns</div>
-            </div>
-          </div>
+    <main className="flex h-screen flex-col overflow-hidden bg-[#1f2329] px-3 py-3 text-slate-100 sm:px-4">
+      <section className="mx-auto flex w-full max-w-[1600px] items-center justify-between rounded-xl border border-[#343a43] bg-[#1f2329] px-3 py-2">
+        <div className="flex items-center gap-2.5">
+          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[conic-gradient(from_210deg_at_50%_50%,#5aa4ff,_#7cc1ff,_#b4d7ff,_#5aa4ff)] text-[10px] font-bold text-[#0f172a]">
+            D
+          </span>
+          <h1 className="text-sm font-semibold tracking-wide text-slate-100">DocTongue</h1>
+        </div>
+        <div className="flex items-center gap-2 text-xs">
+          <button
+            type="button"
+            className="rounded-full border border-[#3a404a] bg-[#252a31] px-3 py-1.5 text-slate-200 transition hover:bg-[#2c323c]"
+          >
+            Share
+          </button>
+          <button
+            type="button"
+            className="rounded-full border border-[#3a404a] bg-[#252a31] px-3 py-1.5 text-slate-200 transition hover:bg-[#2c323c]"
+          >
+            Settings
+          </button>
         </div>
       </section>
 
-      <section className="mt-8 grid gap-8 lg:grid-cols-[0.95fr_1.25fr]">
-        <DocumentPanel
-          documents={documents}
-          loading={loadingDocuments}
-          uploadPending={uploadPending}
-          deletingId={deletePendingId}
-          error={documentError}
-          onUpload={handleUpload}
-          onDelete={handleDelete}
-        />
-        <ChatPanel
-          messageCount={messages.length}
-          hasDocuments={documents.length > 0}
-          pending={chatPending}
-          error={chatError}
-          messages={messages}
-          onAsk={handleAsk}
-        />
+      <section className="mx-auto mt-3 flex min-h-0 w-full max-w-[1600px] flex-1 overflow-hidden rounded-xl border border-[#343a43] bg-[#252a31]">
+        <div className="grid h-full min-h-0 w-full lg:grid-cols-[320px_1fr]">
+          <DocumentPanel
+            documents={documents}
+            loading={loadingDocuments}
+            uploadPending={uploadPending}
+            deletingId={deletePendingId}
+            error={documentError}
+            onUpload={handleUpload}
+            onDelete={handleDelete}
+          />
+          <ChatPanel
+            hasDocuments={documents.length > 0}
+            pending={chatPending}
+            error={chatError}
+            messages={messages}
+            onAsk={handleAsk}
+          />
+        </div>
       </section>
     </main>
   );

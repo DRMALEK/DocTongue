@@ -25,7 +25,7 @@ export function DocumentPanel({
 }: DocumentPanelProps) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const uploadLabel = !selectedFiles.length
-    ? "Choose PDF, TXT, or MD files"
+    ? "Choose files"
     : selectedFiles.length === 1
       ? selectedFiles[0].name
       : `${selectedFiles.length} files selected`;
@@ -44,31 +44,21 @@ export function DocumentPanel({
   }
 
   return (
-    <section className="rounded-[2rem] border border-white/60 bg-white/85 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur">
+    <section className="h-full bg-[#252a31] p-3 text-slate-100 lg:border-r lg:border-[#343a43]">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#b04d1a]">
-            Collection
-          </p>
-          <h2 className="mt-3 text-2xl font-semibold text-slate-900">
-            Document library
-          </h2>
-          <p className="mt-2 max-w-sm text-sm leading-6 text-slate-600">
-            Upload files into a shared collection. Every answer is grounded only
-            in indexed content from these documents.
+          <p className="text-xs font-semibold tracking-wide text-slate-200">
+            Sources
           </p>
         </div>
-        <div className="rounded-full bg-[#fff1e8] px-4 py-2 text-sm font-medium text-[#8b3d18]">
-          {documents.length} indexed
+        <div className="rounded-md border border-[#3a404a] bg-[#20252c] px-2 py-0.5 text-xs text-slate-300">
+          {documents.length} docs
         </div>
       </div>
 
-      <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-        <label className="flex cursor-pointer flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-[#d9a07c] bg-[#fff8f2] px-5 py-8 text-center transition hover:border-[#b04d1a] hover:bg-[#fff3e9]">
-          <span className="text-base font-medium text-slate-900">{uploadLabel}</span>
-          <span className="mt-2 text-sm text-slate-600">
-            Multiple files are uploaded one after another.
-          </span>
+      <form className="mt-4 space-y-3" onSubmit={handleSubmit}>
+        <label className="flex cursor-pointer flex-col items-center justify-center rounded-full border border-[#3a404a] bg-[#20252c] px-4 py-2 text-center transition hover:bg-[#242a33]">
+          <span className="text-sm font-medium text-slate-100">+ {uploadLabel}</span>
           <input
             className="sr-only"
             type="file"
@@ -82,49 +72,49 @@ export function DocumentPanel({
         </label>
 
         <button
-          className="inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-400"
+          className="inline-flex w-full items-center justify-center rounded-full border border-[#3a404a] bg-[#20252c] px-4 py-2 text-sm font-semibold text-slate-100 transition hover:bg-[#2a3039] disabled:cursor-not-allowed disabled:opacity-60"
           type="submit"
           disabled={!selectedFiles.length || uploadPending}
         >
-          {uploadPending ? "Indexing documents..." : "Upload and index"}
+          {uploadPending ? "Indexing..." : "Upload"}
         </button>
       </form>
 
       {error ? (
-        <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mt-3 rounded-lg border border-red-400/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">
           {error}
         </div>
       ) : null}
 
-      <div className="mt-8 space-y-3">
+      <div className="mt-5 space-y-2.5">
         {loading ? (
-          <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
-            Loading indexed documents...
+          <div className="rounded-lg border border-[#3a404a] bg-[#20252c] px-3 py-3 text-sm text-slate-300">
+            Loading...
           </div>
         ) : null}
 
         {!loading && !documents.length ? (
-          <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
-            No documents are indexed yet.
+          <div className="rounded-lg border border-[#3a404a] bg-[#20252c] px-3 py-3 text-sm text-slate-300">
+            No docs yet.
           </div>
         ) : null}
 
         {documents.map((document) => (
           <article
             key={document.id}
-            className="rounded-[1.5rem] border border-slate-200 bg-slate-50/80 p-4"
+            className="rounded-lg border border-[#3a404a] bg-[#20252c] p-3"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-base font-semibold text-slate-900">
+                <h3 className="text-sm font-medium text-slate-100">
                   {document.filename}
                 </h3>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-1 text-xs text-slate-400">
                   {document.page_count} pages • {document.chunk_count} chunks
                 </p>
               </div>
               <button
-                className="rounded-full border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-red-400 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-full border border-[#4b535f] px-2.5 py-1 text-xs font-medium text-slate-300 transition hover:border-red-400 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-60"
                 type="button"
                 disabled={deletingId === document.id}
                 onClick={() => onDelete(document.id)}

@@ -63,22 +63,21 @@ describe("Home page", () => {
     const user = userEvent.setup();
     render(<Home />);
 
-    expect(await screen.findByText("No documents are indexed yet.")).toBeInTheDocument();
+    expect(await screen.findByText("No docs yet.")).toBeInTheDocument();
 
-    const fileInput = screen.getByLabelText(/choose pdf, txt, or md files/i);
+    const fileInput = screen.getByLabelText(/choose files/i);
     const file = new File(["dummy"], "guide.pdf", { type: "application/pdf" });
     await user.upload(fileInput, file);
-    await user.click(screen.getByRole("button", { name: /upload and index/i }));
+    await user.click(screen.getByRole("button", { name: /^upload$/i }));
 
     expect(uploadDocument).toHaveBeenCalledWith(file);
     expect(await screen.findByText("guide.pdf")).toBeInTheDocument();
 
-    const questionInput = screen.getByPlaceholderText(/what does the collection say about/i);
+    const questionInput = screen.getByPlaceholderText(/start typing/i);
     await user.type(questionInput, "What does the guide say about evidence?");
     await user.click(screen.getByRole("button", { name: /^send$/i }));
 
     expect(await screen.findByText(answer.answer)).toBeInTheDocument();
-    expect(screen.getByText("References")).toBeInTheDocument();
     expect(screen.getAllByText("[1]", { exact: false }).length).toBeGreaterThan(1);
     expect(screen.getAllByText("guide.pdf").length).toBeGreaterThan(1);
     expect(
