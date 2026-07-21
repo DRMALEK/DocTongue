@@ -1,5 +1,20 @@
-from dataclasses import dataclass
+"""Retrieval and grounded citation orchestration.
+
+This module owns the runtime flow for answering a user question:
+
+1. Retrieve top vector hits for the question.
+2. Filter weak hits with lightweight grounding checks.
+3. Ask the answer generator to answer from filtered excerpts.
+4. Bind answer markers like [1], [2] back to retrieved hits.
+5. Normalize markers at the document level so multiple chunk markers
+    from the same document collapse to one citation number.
+
+The returned ChatResponse includes the final answer text and the
+document excerpts used as citations.
+"""
+
 import logging
+import re
 
 from app.core.config import Settings
 from app.models.schemas import ChatResponse, Citation
@@ -8,13 +23,7 @@ from app.services.vector_store import SearchResult, VectorStore
 
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass(slots=True)
-class RetrievalOutcome:
-    answer: str
-    citations: list[Citation]
-    grounded: bool
+CITATION_MARKER_RE = re.compile(r"\[(\d+)\]")
 
 
 def answer_question(
@@ -23,6 +32,7 @@ def answer_question(
     vector_store: VectorStore,
     answer_generator: AnswerGenerator,
 ) -> ChatResponse:
+    """Answer a question using retrieval + grounded citation binding."""
     hits = vector_store.search(question, settings.retrieval_k)
     if not hits:
         return ChatResponse(
@@ -50,6 +60,12 @@ def answer_question(
         )
         grounded = False
 
+    answer, cited_hits = _bind_answer_to_citations(
+        answer=answer,
+        top_hits=top_hits,
+        max_citations=settings.max_answer_citations,
+    )
+
     citations = [
         Citation(
             document_id=hit.document_id,
@@ -58,14 +74,67 @@ def answer_question(
             page_number=hit.page_number,
             score=round(hit.score, 3),
         )
-        for hit in top_hits[: settings.max_answer_citations]
+        for hit in cited_hits
     ]
     return ChatResponse(answer=answer, citations=citations, grounded=grounded)
 
 
 def _filter_grounded_hits(question: str, hits: list[SearchResult]) -> list[SearchResult]:
+    """Keep hits that pass lexical-overlap or vector-score grounding thresholds."""
     grounded_hits: list[SearchResult] = []
     for hit in hits:
         if lexical_overlap_score(question, hit.content) >= 0.1 or hit.score >= 0.55:
             grounded_hits.append(hit)
     return grounded_hits
+
+
+def _bind_answer_to_citations(
+    answer: str,
+    top_hits: list[SearchResult],
+    max_citations: int,
+) -> tuple[str, list[SearchResult]]:
+    """Map answer markers to citations and normalize markers to document-level ids."""
+    selected_hits: list[SearchResult] = []
+    document_to_citation: dict[str, int] = {}
+
+    # Convert model chunk markers like [4] into stable, document-level markers.
+    # If [1] and [4] point to chunks from the same document, both become [1].
+    def replace_marker(match: re.Match[str]) -> str:
+        source_number = int(match.group(1))
+        zero_based = source_number - 1
+        if zero_based < 0 or zero_based >= len(top_hits):
+            return match.group(0)
+
+        hit = top_hits[zero_based]
+        citation_number = document_to_citation.get(hit.document_id)
+        if citation_number is None:
+            if len(selected_hits) >= max_citations:
+                return match.group(0)
+            selected_hits.append(hit)
+            citation_number = len(selected_hits)
+            document_to_citation[hit.document_id] = citation_number
+
+        return f"[{citation_number}]"
+
+    normalized_answer = CITATION_MARKER_RE.sub(replace_marker, answer)
+    if not selected_hits:
+        return answer, _first_unique_documents(top_hits, max_citations)
+
+    # Collapse adjacent duplicates such as "[1][1]" after normalization.
+    normalized_answer = re.sub(r"(\[\d+\])(?:\s*\1)+", r"\1", normalized_answer)
+
+    return normalized_answer, selected_hits
+
+
+def _first_unique_documents(hits: list[SearchResult], max_citations: int) -> list[SearchResult]:
+    """Fallback selection: first N hits with unique document ids."""
+    selected: list[SearchResult] = []
+    seen_document_ids: set[str] = set()
+    for hit in hits:
+        if hit.document_id in seen_document_ids:
+            continue
+        selected.append(hit)
+        seen_document_ids.add(hit.document_id)
+        if len(selected) >= max_citations:
+            break
+    return selected

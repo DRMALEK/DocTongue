@@ -87,6 +87,8 @@ class AnswerGenerator:
                     "role": "system",
                     "content": (
                         "Answer only from the provided document excerpts. "
+                        "Cite every factual claim with source markers like [1] or [2], "
+                        "where numbers map to the provided Source blocks. "
                         "If the answer is not supported, say you could not find it in the indexed documents."
                     ),
                 },
@@ -158,11 +160,11 @@ def _fallback_answer(question: str, contexts: list[str]) -> str:
         return "I could not find an answer in the indexed documents."
     lead = contexts[0]
     if len(contexts) == 1:
-        return f"Based on the indexed documents: {lead}"
+        return f"Based on the indexed documents: {lead} [1]"
     supporting = contexts[1]
     return (
         "Based on the indexed documents, the most relevant evidence is: "
-        f"{lead} Additional supporting context: {supporting}"
+        f"{lead} [1] Additional supporting context: {supporting} [2]"
     )
 
 
