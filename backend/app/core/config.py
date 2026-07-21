@@ -35,6 +35,10 @@ class Settings(BaseSettings):
     llm_temperature: float = 0.1
     llm_timeout_seconds: float = 60.0
     max_answer_citations: int = 3
+    quality_control_enabled: bool = False
+    quality_control_threshold: float = 0.5
+    quality_control_fail_open: bool = True
+    quality_control_include_reason: bool = True
     chat_memory_window: int = 3
     chat_memory_ttl_seconds: int = 3600
     redis_url: str = "redis://localhost:6379/0"

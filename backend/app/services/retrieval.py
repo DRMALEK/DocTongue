@@ -19,9 +19,10 @@ from datetime import datetime, timezone
 from threading import Lock
 
 from app.core.config import Settings
-from app.models.schemas import ChatResponse, Citation
+from app.models.schemas import ChatResponse, Citation, QualityControlResult
 from app.services.chat_memory import ChatMemoryStore
 from app.services.llm import AnswerGenerator, lexical_overlap_score
+from app.services.quality_control import ResponseQualityEvaluator
 from app.services.vector_store import SearchResult, VectorStore
 
 
@@ -37,6 +38,7 @@ def answer_question(
     vector_store: VectorStore,
     answer_generator: AnswerGenerator,
     chat_memory_store: ChatMemoryStore,
+    quality_evaluator: ResponseQualityEvaluator | None = None,
 ) -> ChatResponse:
     """Answer a question using retrieval + grounded citation binding."""
     recent_turns = chat_memory_store.get_recent_turns(
@@ -50,6 +52,7 @@ def answer_question(
             answer="I could not find an answer in the indexed documents.",
             citations=[],
             grounded=False,
+            quality_control=None,
         )
     else:
         top_hits = _filter_grounded_hits(retrieval_query, hits)
@@ -58,6 +61,7 @@ def answer_question(
                 answer="I could not find enough supporting evidence in the indexed documents to answer that.",
                 citations=[],
                 grounded=False,
+                quality_control=None,
             )
         else:
             grounded = True
@@ -87,7 +91,31 @@ def answer_question(
                 )
                 for hit in cited_hits
             ]
-            response = ChatResponse(answer=answer, citations=citations, grounded=grounded)
+            quality_control = None
+            if quality_evaluator is not None:
+                try:
+                    quality = quality_evaluator.evaluate(
+                        question=question,
+                        answer=answer,
+                        contexts=[hit.content for hit in cited_hits],
+                        grounded=grounded,
+                    )
+                    if quality is not None:
+                        quality_control = QualityControlResult(
+                            score=round(quality.score, 3),
+                            passed=quality.passed,
+                            method=quality.method,
+                            reason=quality.reason,
+                        )
+                except Exception:
+                    logger.exception("Quality control evaluation failed.")
+
+            response = ChatResponse(
+                answer=answer,
+                citations=citations,
+                grounded=grounded,
+                quality_control=quality_control,
+            )
 
     try:
         chat_memory_store.append_turn(session_id, question, response.answer)

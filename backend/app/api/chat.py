@@ -4,6 +4,7 @@ from app.core.config import Settings
 from app.core.dependencies import (
     get_answer_generator,
     get_chat_memory_store,
+    get_quality_evaluator,
     get_vector_store,
     settings_dependency,
 )
@@ -11,6 +12,7 @@ from app.models.schemas import ChatRequest, ChatResponse
 from app.services.chat_memory import ChatMemoryStore
 from app.services.guardrails import validate_chat_question
 from app.services.llm import AnswerGenerator
+from app.services.quality_control import ResponseQualityEvaluator
 from app.services.retrieval import answer_question
 from app.services.vector_store import VectorStore
 
@@ -25,6 +27,7 @@ def chat(
     vector_store: VectorStore = Depends(get_vector_store),
     answer_generator: AnswerGenerator = Depends(get_answer_generator),
     chat_memory_store: ChatMemoryStore = Depends(get_chat_memory_store),
+    quality_evaluator: ResponseQualityEvaluator = Depends(get_quality_evaluator),
 ) -> ChatResponse:
     violation = validate_chat_question(payload.question)
     if violation:
@@ -38,6 +41,7 @@ def chat(
             vector_store=vector_store,
             answer_generator=answer_generator,
             chat_memory_store=chat_memory_store,
+            quality_evaluator=quality_evaluator,
         )
     except Exception as exc:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to answer question.") from exc

@@ -42,7 +42,15 @@ class ChatRequest(BaseModel):
     session_id: str = Field(default="default", min_length=1, max_length=128)
 
 
+class QualityControlResult(BaseModel):
+    score: float = Field(ge=0.0, le=1.0)
+    passed: bool
+    method: str
+    reason: str | None = None
+
+
 class ChatResponse(BaseModel):
     answer: str
     citations: list[Citation]
     grounded: bool
+    quality_control: QualityControlResult | None = None

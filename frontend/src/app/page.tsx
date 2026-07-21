@@ -93,6 +93,7 @@ export default function Home() {
           content: response.answer,
           citations: response.citations,
           grounded: response.grounded,
+          qualityControl: response.quality_control,
         },
       ]);
     } catch (error) {

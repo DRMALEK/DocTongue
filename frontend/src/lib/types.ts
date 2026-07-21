@@ -19,6 +19,14 @@ export type ChatResponse = {
   answer: string;
   citations: Citation[];
   grounded: boolean;
+  quality_control?: QualityControlResult | null;
+};
+
+export type QualityControlResult = {
+  score: number;
+  passed: boolean;
+  method: string;
+  reason?: string | null;
 };
 
 export type ChatMessage = {
@@ -27,4 +35,5 @@ export type ChatMessage = {
   content: string;
   citations?: Citation[];
   grounded?: boolean;
+  qualityControl?: QualityControlResult | null;
 };

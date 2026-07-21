@@ -8,6 +8,7 @@ from app.core.dependencies import (
     get_answer_generator,
     get_document_store,
     get_embedding_service,
+    get_quality_evaluator,
     get_vector_store,
 )
 from app.main import create_app
@@ -24,6 +25,7 @@ def client(tmp_path: pytest.TempPathFactory, monkeypatch: pytest.MonkeyPatch) ->
     get_document_store.cache_clear()
     get_embedding_service.cache_clear()
     get_answer_generator.cache_clear()
+    get_quality_evaluator.cache_clear()
     get_vector_store.cache_clear()
 
     app = create_app()
@@ -35,4 +37,5 @@ def client(tmp_path: pytest.TempPathFactory, monkeypatch: pytest.MonkeyPatch) ->
     get_document_store.cache_clear()
     get_embedding_service.cache_clear()
     get_answer_generator.cache_clear()
+    get_quality_evaluator.cache_clear()
     get_vector_store.cache_clear()
