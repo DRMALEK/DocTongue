@@ -100,6 +100,68 @@ class AnswerGenerator:
         )
         return response.choices[0].message.content.strip()
 
+    def reformulate_query(self, question: str, recent_turns: list[dict[str, str]]) -> str:
+        if not recent_turns:
+            return question
+
+        ordered_history = list(reversed(recent_turns))
+        if self._settings.llm_provider == "stub":
+            history_parts = [
+                f"Q: {turn.get('question', '')} A: {turn.get('answer', '')}".strip()
+                for turn in ordered_history
+            ]
+            history = " ".join(part for part in history_parts if part)
+            return f"{history} {question}".strip()
+        if not _uses_litellm_provider(self._settings.llm_provider):
+            return question
+
+        model = _normalize_model_name(
+            provider=self._settings.llm_provider,
+            model=self._settings.llm_model,
+        )
+        history_lines: list[str] = []
+        for index, turn in enumerate(ordered_history):
+            history_lines.append(
+                f"Turn {index + 1} User: {turn.get('question', '').strip()}"
+            )
+            history_lines.append(
+                f"Turn {index + 1} Assistant: {turn.get('answer', '').strip()}"
+            )
+        history_block = "\n".join(history_lines)
+        response = completion(
+            model=model,
+            temperature=0,
+            **_build_litellm_kwargs(
+                api_base=self._settings.llm_api_base,
+                api_key=_resolve_api_key(
+                    self._settings.llm_provider,
+                    self._settings.llm_api_key,
+                    self._settings,
+                ),
+                timeout=self._settings.llm_timeout_seconds,
+            ),
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "Rewrite the latest user question into a standalone retrieval query. "
+                        "Use conversation history, including assistant answers, only to resolve references. "
+                        "Keep it concise and return only the rewritten query text."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        "Recent conversation turns (oldest to newest):\n"
+                        f"{history_block}\n\n"
+                        f"Current user question: {question}"
+                    ),
+                },
+            ],
+        )
+        rewritten = response.choices[0].message.content.strip()
+        return rewritten or question
+
 
 def _build_litellm_kwargs(
     *,

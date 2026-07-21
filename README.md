@@ -7,6 +7,7 @@ DocTongue is a simple full-stack document Q&A application. Users upload PDFs or 
 - Upload and process PDFs, TXT, and Markdown files
 - Search across multiple documents in a single shared collection
 - Chat-style grounded Q&A
+- Sliding window chat memory (last 3 chat turns with question and answer) with query reformulation before retrieval
 - Visible citations with filename, page number, excerpt, and score
 - Document listing and deletion
 - Basic backend tests for chunking and API flows
@@ -17,6 +18,7 @@ DocTongue is a simple full-stack document Q&A application. Users upload PDFs or 
 - Backend: FastAPI, Python 3.12
 - Document parsing: PyPDF
 - Retrieval: local chunking, embeddings, ChromaDB vector search
+- Chat memory: Redis (in-memory) with automatic in-process fallback when Redis is unavailable
 - LLM integration: provider-agnostic answer generation through LiteLLM, with a local stub mode for zero-key local development
 
 ## Architecture
@@ -44,6 +46,20 @@ For local development in a dev container, leave `NEXT_PUBLIC_API_BASE_URL` empty
 - To use a real model provider, set `LLM_PROVIDER` and `EMBEDDING_PROVIDER` to `litellm`, choose model names, and export the matching provider keys.
 - `LLM_API_BASE`, `LLM_API_KEY`, `EMBEDDING_API_BASE`, and `EMBEDDING_API_KEY` are optional overrides for OpenAI-compatible or proxy endpoints.
 - `LLM_TIMEOUT_SECONDS` controls both live embedding and completion request timeouts.
+- `CHAT_MEMORY_WINDOW` controls how many recent chat turns are kept per chat session (default `3`).
+- `CHAT_MEMORY_TTL_SECONDS` sets optional expiration for each session memory key in Redis.
+- `REDIS_URL` and `REDIS_CHAT_KEY_PREFIX` configure where chat memory is stored.
+
+### Sliding Window Buffer with Query Reformulation
+
+DocTongue uses a lightweight conversational memory pattern for retrieval:
+
+1. For each chat request, the backend reads up to the last `CHAT_MEMORY_WINDOW` chat turns (question and answer pairs) from Redis using `session_id`.
+2. The current question is reformulated into a standalone retrieval query using that short turn history.
+3. Retrieval runs on the reformulated query, while answer generation still responds to the original current question.
+4. The current question and generated answer are appended back into memory and the window is trimmed to the configured size.
+
+If Redis is not running, the backend falls back to an in-process memory store so local development still works.
 
 ## Local setup
 
@@ -88,11 +104,20 @@ Accepts a JSON body like:
 
 ```json
 {
-	"question": "Where are uploaded documents stored?"
+	"question": "Where are uploaded documents stored?",
+	"session_id": "demo-user-1"
 }
 ```
 
 Returns a grounded answer and citation list.
+
+`session_id` is optional and defaults to `default`. Provide a stable `session_id` per user/client to enable multi-turn memory.
+
+### Optional: run Redis locally
+
+```bash
+docker run --name doctongue-redis -p 6379:6379 -d redis:7-alpine
+```
 
 ## Testing
 

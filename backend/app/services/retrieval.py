@@ -18,6 +18,7 @@ import re
 
 from app.core.config import Settings
 from app.models.schemas import ChatResponse, Citation
+from app.services.chat_memory import ChatMemoryStore
 from app.services.llm import AnswerGenerator, lexical_overlap_score
 from app.services.vector_store import SearchResult, VectorStore
 
@@ -28,55 +29,68 @@ CITATION_MARKER_RE = re.compile(r"\[(\d+)\]")
 
 def answer_question(
     question: str,
+    session_id: str,
     settings: Settings,
     vector_store: VectorStore,
     answer_generator: AnswerGenerator,
+    chat_memory_store: ChatMemoryStore,
 ) -> ChatResponse:
     """Answer a question using retrieval + grounded citation binding."""
-    hits = vector_store.search(question, settings.retrieval_k)
+    recent_turns = chat_memory_store.get_recent_turns(
+        session_id=session_id,
+        limit=settings.chat_memory_window,
+    )
+    retrieval_query = answer_generator.reformulate_query(question, recent_turns)
+    hits = vector_store.search(retrieval_query, settings.retrieval_k)
     if not hits:
-        return ChatResponse(
+        response = ChatResponse(
             answer="I could not find an answer in the indexed documents.",
             citations=[],
             grounded=False,
         )
+    else:
+        top_hits = _filter_grounded_hits(retrieval_query, hits)
+        if not top_hits:
+            response = ChatResponse(
+                answer="I could not find enough supporting evidence in the indexed documents to answer that.",
+                citations=[],
+                grounded=False,
+            )
+        else:
+            grounded = True
+            try:
+                answer = answer_generator.generate_answer(question, [hit.content for hit in top_hits])
+            except Exception as exc:
+                logger.exception("LLM answer generation failed, returning evidence-only fallback.")
+                answer = (
+                    "I found relevant excerpts in the indexed documents, but I could not generate "
+                    "a final response from the configured LLM provider."
+                )
+                grounded = False
 
-    top_hits = _filter_grounded_hits(question, hits)
-    if not top_hits:
-        return ChatResponse(
-            answer="I could not find enough supporting evidence in the indexed documents to answer that.",
-            citations=[],
-            grounded=False,
-        )
+            answer, cited_hits = _bind_answer_to_citations(
+                answer=answer,
+                top_hits=top_hits,
+                max_citations=settings.max_answer_citations,
+            )
 
-    grounded = True
+            citations = [
+                Citation(
+                    document_id=hit.document_id,
+                    filename=hit.filename,
+                    excerpt=hit.content,
+                    page_number=hit.page_number,
+                    score=round(hit.score, 3),
+                )
+                for hit in cited_hits
+            ]
+            response = ChatResponse(answer=answer, citations=citations, grounded=grounded)
+
     try:
-        answer = answer_generator.generate_answer(question, [hit.content for hit in top_hits])
-    except Exception as exc:
-        logger.exception("LLM answer generation failed, returning evidence-only fallback.")
-        answer = (
-            "I found relevant excerpts in the indexed documents, but I could not generate "
-            "a final response from the configured LLM provider."
-        )
-        grounded = False
-
-    answer, cited_hits = _bind_answer_to_citations(
-        answer=answer,
-        top_hits=top_hits,
-        max_citations=settings.max_answer_citations,
-    )
-
-    citations = [
-        Citation(
-            document_id=hit.document_id,
-            filename=hit.filename,
-            excerpt=hit.content,
-            page_number=hit.page_number,
-            score=round(hit.score, 3),
-        )
-        for hit in cited_hits
-    ]
-    return ChatResponse(answer=answer, citations=citations, grounded=grounded)
+        chat_memory_store.append_turn(session_id, question, response.answer)
+    except Exception:
+        logger.exception("Failed to append chat turn to memory for session %s", session_id)
+    return response
 
 
 def _filter_grounded_hits(question: str, hits: list[SearchResult]) -> list[SearchResult]:

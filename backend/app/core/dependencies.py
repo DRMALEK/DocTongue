@@ -2,6 +2,7 @@ from functools import lru_cache
 
 from app.core.config import Settings, get_settings
 from app.services.document_store import DocumentStore
+from app.services.chat_memory import ChatMemoryStore
 from app.services.llm import AnswerGenerator, EmbeddingService
 from app.services.vector_store import VectorStore
 
@@ -28,3 +29,8 @@ def get_answer_generator() -> AnswerGenerator:
 @lru_cache
 def get_vector_store() -> VectorStore:
     return VectorStore(get_settings())
+
+
+@lru_cache
+def get_chat_memory_store() -> ChatMemoryStore:
+    return ChatMemoryStore(get_settings())

@@ -7,12 +7,31 @@ from app.services.vector_store import SearchResult
 class StubVectorStore:
     def __init__(self, hits: list[SearchResult]) -> None:
         self._hits = hits
+        self.last_query: str | None = None
 
     def search(self, question: str, limit: int) -> list[SearchResult]:
+        self.last_query = question
         return self._hits[:limit]
 
 
+class StubMemoryStore:
+    def __init__(self, recent_turns: list[dict[str, str]] | None = None) -> None:
+        self.recent_turns = recent_turns or []
+        self.appended_turns: list[tuple[str, str, str]] = []
+
+    def get_recent_turns(self, session_id: str, limit: int | None = None) -> list[dict[str, str]]:
+        if limit is None:
+            return list(self.recent_turns)
+        return self.recent_turns[:limit]
+
+    def append_turn(self, session_id: str, question: str, answer: str) -> None:
+        self.appended_turns.append((session_id, question, answer))
+
+
 class FailingAnswerGenerator:
+    def reformulate_query(self, question: str, recent_turns: list[dict[str, str]]) -> str:
+        return question
+
     def generate_answer(self, question: str, contexts: list[str]) -> str:
         raise RuntimeError("provider failure")
 
@@ -20,6 +39,11 @@ class FailingAnswerGenerator:
 class MarkerAnswerGenerator:
     def __init__(self, answer: str) -> None:
         self._answer = answer
+        self.last_recent_turns: list[dict[str, str]] = []
+
+    def reformulate_query(self, question: str, recent_turns: list[dict[str, str]]) -> str:
+        self.last_recent_turns = recent_turns
+        return question
 
     def generate_answer(self, question: str, contexts: list[str]) -> str:
         return self._answer
@@ -29,22 +53,33 @@ def test_answer_question_returns_not_found_when_no_hits() -> None:
     settings = Settings()
     answer_generator = AnswerGenerator(settings)
     vector_store = StubVectorStore([])
+    memory_store = StubMemoryStore()
 
     response = answer_question(
         question="What is the retention policy?",
+        session_id="test-session",
         settings=settings,
         vector_store=vector_store,
         answer_generator=answer_generator,
+        chat_memory_store=memory_store,
     )
 
     assert response.grounded is False
     assert response.citations == []
     assert response.answer == "I could not find an answer in the indexed documents."
+    assert memory_store.appended_turns == [
+        (
+            "test-session",
+            "What is the retention policy?",
+            "I could not find an answer in the indexed documents.",
+        )
+    ]
 
 
 def test_answer_question_rejects_weak_support() -> None:
     settings = Settings()
     answer_generator = AnswerGenerator(settings)
+    memory_store = StubMemoryStore()
     vector_store = StubVectorStore(
         [
             SearchResult(
@@ -59,9 +94,11 @@ def test_answer_question_rejects_weak_support() -> None:
 
     response = answer_question(
         question="What is the employee expense reimbursement deadline?",
+        session_id="test-session",
         settings=settings,
         vector_store=vector_store,
         answer_generator=answer_generator,
+        chat_memory_store=memory_store,
     )
 
     assert response.grounded is False
@@ -70,10 +107,18 @@ def test_answer_question_rejects_weak_support() -> None:
         response.answer
         == "I could not find enough supporting evidence in the indexed documents to answer that."
     )
+    assert memory_store.appended_turns == [
+        (
+            "test-session",
+            "What is the employee expense reimbursement deadline?",
+            "I could not find enough supporting evidence in the indexed documents to answer that.",
+        )
+    ]
 
 
 def test_answer_question_returns_evidence_fallback_when_llm_fails() -> None:
     settings = Settings()
+    memory_store = StubMemoryStore()
     vector_store = StubVectorStore(
         [
             SearchResult(
@@ -88,19 +133,27 @@ def test_answer_question_returns_evidence_fallback_when_llm_fails() -> None:
 
     response = answer_question(
         question="What is the retention policy?",
+        session_id="test-session",
         settings=settings,
         vector_store=vector_store,
         answer_generator=FailingAnswerGenerator(),
+        chat_memory_store=memory_store,
     )
 
     assert response.grounded is False
     assert response.citations
     assert response.citations[0].filename == "guide.txt"
     assert "could not generate" in response.answer
+    assert memory_store.appended_turns[-1] == (
+        "test-session",
+        "What is the retention policy?",
+        response.answer,
+    )
 
 
 def test_answer_question_binds_citations_to_referenced_sources() -> None:
     settings = Settings(max_answer_citations=3)
+    memory_store = StubMemoryStore()
     vector_store = StubVectorStore(
         [
             SearchResult(
@@ -122,11 +175,13 @@ def test_answer_question_binds_citations_to_referenced_sources() -> None:
 
     response = answer_question(
         question="What is the retention policy?",
+        session_id="test-session",
         settings=settings,
         vector_store=vector_store,
         answer_generator=MarkerAnswerGenerator(
             "The retention policy keeps records for seven years. [2]"
         ),
+        chat_memory_store=memory_store,
     )
 
     assert response.grounded is True
@@ -137,6 +192,7 @@ def test_answer_question_binds_citations_to_referenced_sources() -> None:
 
 def test_answer_question_deduplicates_citations_by_document() -> None:
     settings = Settings(max_answer_citations=3)
+    memory_store = StubMemoryStore()
     vector_store = StubVectorStore(
         [
             SearchResult(
@@ -165,11 +221,13 @@ def test_answer_question_deduplicates_citations_by_document() -> None:
 
     response = answer_question(
         question="What are the interview project options?",
+        session_id="test-session",
         settings=settings,
         vector_store=vector_store,
         answer_generator=MarkerAnswerGenerator(
             "Available options include chat with docs [1], code documentation assistant [2], and guidance [3]."
         ),
+        chat_memory_store=memory_store,
     )
 
     assert response.grounded is True
@@ -181,6 +239,7 @@ def test_answer_question_deduplicates_citations_by_document() -> None:
 
 def test_answer_question_normalizes_markers_for_same_document() -> None:
     settings = Settings(max_answer_citations=3)
+    memory_store = StubMemoryStore()
     vector_store = StubVectorStore(
         [
             SearchResult(
@@ -202,9 +261,11 @@ def test_answer_question_normalizes_markers_for_same_document() -> None:
 
     response = answer_question(
         question="What are the interview project options?",
+        session_id="test-session",
         settings=settings,
         vector_store=vector_store,
         answer_generator=MarkerAnswerGenerator("Options include A and B [1][2]."),
+        chat_memory_store=memory_store,
     )
 
     assert response.grounded is True
@@ -212,3 +273,78 @@ def test_answer_question_normalizes_markers_for_same_document() -> None:
     assert response.citations[0].document_id == "doc-1"
     assert "[1][2]" not in response.answer
     assert "[1]." in response.answer or "[1]" in response.answer
+
+
+def test_answer_question_uses_reformulated_query_and_window_history() -> None:
+    settings = Settings(max_answer_citations=3, chat_memory_window=3)
+    memory_store = StubMemoryStore(
+        [
+            {
+                "question": "What does the onboarding policy say about contractors?",
+                "answer": "Contractors complete onboarding in five days.",
+            },
+            {
+                "question": "And what about interns?",
+                "answer": "Intern onboarding uses the same timeline.",
+            },
+            {
+                "question": "Does that include remote workers?",
+                "answer": "Yes, remote workers are included.",
+            },
+            {
+                "question": "Old question that should be trimmed by limit",
+                "answer": "Old answer that should be trimmed by limit",
+            },
+        ]
+    )
+    vector_store = StubVectorStore(
+        [
+            SearchResult(
+                document_id="doc-1",
+                filename="onboarding.txt",
+                content="Interns and contractors must complete onboarding in five days.",
+                page_number=1,
+                score=0.94,
+            )
+        ]
+    )
+
+    class ReformulatingGenerator(MarkerAnswerGenerator):
+        def reformulate_query(self, question: str, recent_turns: list[dict[str, str]]) -> str:
+            self.last_recent_turns = recent_turns
+            return "contractor intern remote onboarding requirements"
+
+    answer_generator = ReformulatingGenerator(
+        "Interns and contractors complete onboarding in five days. [1]"
+    )
+
+    response = answer_question(
+        question="What are their onboarding requirements?",
+        session_id="session-42",
+        settings=settings,
+        vector_store=vector_store,
+        answer_generator=answer_generator,
+        chat_memory_store=memory_store,
+    )
+
+    assert response.grounded is True
+    assert vector_store.last_query == "contractor intern remote onboarding requirements"
+    assert answer_generator.last_recent_turns == [
+        {
+            "question": "What does the onboarding policy say about contractors?",
+            "answer": "Contractors complete onboarding in five days.",
+        },
+        {
+            "question": "And what about interns?",
+            "answer": "Intern onboarding uses the same timeline.",
+        },
+        {
+            "question": "Does that include remote workers?",
+            "answer": "Yes, remote workers are included.",
+        },
+    ]
+    assert memory_store.appended_turns[-1] == (
+        "session-42",
+        "What are their onboarding requirements?",
+        "Interns and contractors complete onboarding in five days. [1]",
+    )

@@ -39,6 +39,7 @@ class Citation(BaseModel):
 
 class ChatRequest(BaseModel):
     question: str = Field(min_length=3, max_length=4000)
+    session_id: str = Field(default="default", min_length=1, max_length=128)
 
 
 class ChatResponse(BaseModel):

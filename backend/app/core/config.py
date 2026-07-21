@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     llm_temperature: float = 0.1
     llm_timeout_seconds: float = 60.0
     max_answer_citations: int = 3
+    chat_memory_window: int = 3
+    chat_memory_ttl_seconds: int = 3600
+    redis_url: str = "redis://localhost:6379/0"
+    redis_chat_key_prefix: str = "doctongue:chat"
 
     model_config = SettingsConfigDict(
         env_file=(
