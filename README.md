@@ -6,15 +6,16 @@ DocTongue is a simple full-stack document Q&A application. Users upload PDFs int
 
 ## Features
 
-- Upload and process PDF files (max 50 MB per file)
-- Search across multiple documents in a single shared collection
-- Chat-style grounded Q&A
-- Sliding window chat memory (last 3 chat turns with question and answer) with query reformulation before retrieval
-- Plain-text chat audit logging with timestamp, question, and answer saved to `backend/data/chat_audit.txt`
-- Visible citations with filename only
-- Input guardrails for prompt-injection attempts and restricted explicit sexual content
-- Document listing and deletion
-- Basic backend tests for chunking and API flows
+- The system accepts PDF uploads up to 50 MB per file.
+- The system indexes uploaded PDFs and makes them searchable across the shared document collection.
+- The system provides chat-based question answering grounded in indexed document evidence.
+- The system returns citation references for factual answers, showing source filenames.
+- The system maintains short multi-turn conversation context per chat session.
+- The system records each completed chat exchange (timestamp, user question, assistant answer) in an audit log.
+- The system rejects prompt-injection attempts that request hidden instructions or policy bypass.
+- The system rejects explicit sexual or nudity-related requests.
+- The system allows users to view indexed documents and delete documents from the collection.
+- The system exposes automated tests for key backend API and retrieval behavior.
 
 ## Stack
 
@@ -62,34 +63,25 @@ For local development in a dev container, leave `NEXT_PUBLIC_API_BASE_URL` empty
 
 ### Sliding Window Buffer with Query Reformulation
 
-DocTongue uses a lightweight conversational memory pattern for retrieval:
+Functional requirements:
 
-1. For each chat request, the backend reads up to the last `CHAT_MEMORY_WINDOW` chat turns (question and answer pairs) from Redis using `session_id`.
-2. The current question is reformulated into a standalone retrieval query using that short turn history.
-3. Retrieval runs on the reformulated query, while answer generation still responds to the original current question.
-4. The current question and generated answer are appended back into memory and the window is trimmed to the configured size.
-
-If Redis is not running, the backend falls back to an in-process memory store so local development still works.
-
-Each completed chat is also appended to a plain-text audit log with its timestamp, question, and answer. By default, that file is stored at `backend/data/chat_audit.txt`.
+1. The system stores recent chat turns per `session_id` and uses that context to improve follow-up question handling.
+2. The system limits retained context to `CHAT_MEMORY_WINDOW` recent turns.
+3. The system continues to answer the current user question while using session context to improve retrieval relevance.
+4. The system appends each completed turn back into session memory.
+5. The system continues operating when Redis is unavailable by using a local fallback memory mechanism.
+6. The system writes chat audit entries to `backend/data/chat_audit.txt` by default, unless `CHAT_AUDIT_LOG_PATH` is provided.
 
 ### Quality control (deepeval)
 
-DocTongue now supports a simple quality control step after answer generation.
+Functional requirements:
 
-How it works:
-
-1. The app generates a grounded answer and citations as usual.
-2. If `QUALITY_CONTROL_ENABLED=1`, backend runs deepeval `AnswerRelevancyMetric` against:
-	- input question
-	- generated answer
-	- retrieved citation context
-3. The API returns `quality_control` with:
-	- `score` (0.0-1.0)
-	- `passed` (`score >= QUALITY_CONTROL_THRESHOLD`)
-	- `method` (for example `deepeval.answer_relevancy`)
-	- optional `reason`
-4. If deepeval cannot run (for example no judge credentials), and `QUALITY_CONTROL_FAIL_OPEN=1`, the app returns a deterministic lexical-overlap fallback score instead of failing the request.
+1. The system supports optional response quality evaluation when `QUALITY_CONTROL_ENABLED=1`.
+2. The system returns a `quality_control` object for evaluated responses containing `score`, `passed`, and `method` fields.
+3. The system computes `passed` using `QUALITY_CONTROL_THRESHOLD`.
+4. The system includes `reason` when `QUALITY_CONTROL_INCLUDE_REASON=1`.
+5. The system keeps chat responses available when judge evaluation fails if `QUALITY_CONTROL_FAIL_OPEN=1`.
+6. The system returns judge-based evaluation metadata when judge execution succeeds.
 
 Minimal enablement:
 
