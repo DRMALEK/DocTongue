@@ -1,0 +1,51 @@
+DocTongue-2/
+├── .env.example
+├── .gitignore
+├── README.md
+├── project-structure.txt
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── chat.py
+│   │   │   └── documents.py
+│   │   ├── core/
+│   │   │   ├── config.py
+│   │   │   └── dependencies.py
+│   │   ├── models/
+│   │   │   └── schemas.py
+│   │   ├── services/
+│   │   │   ├── chunking.py
+│   │   │   ├── document_store.py
+│   │   │   ├── ingestion.py
+│   │   │   ├── llm.py
+│   │   │   ├── retrieval.py
+│   │   │   └── vector_store.py
+│   │   ├── __init__.py
+│   │   └── main.py
+│   ├── data/
+│   │   ├── .gitkeep
+│   │   ├── chroma/
+│   │   │   └── .gitkeep
+│   │   └── uploads/
+│   │       └── .gitkeep
+│   ├── tests/
+│   │   ├── conftest.py
+│   │   ├── test_api.py
+│   │   └── test_chunking.py
+│   └── pyproject.toml
+└── frontend/
+    ├── src/
+    │   ├── app/
+    │   │   ├── globals.css
+    │   │   ├── layout.tsx
+    │   │   └── page.tsx
+    │   ├── components/
+    │   │   ├── chat-panel.tsx
+    │   │   ├── document-panel.tsx
+    │   │   └── source-citations.tsx
+    │   └── lib/
+    │       ├── api.ts
+    │       └── types.ts
+    ├── package.json
+    ├── postcss.config.mjs
+    └── tsconfig.json
