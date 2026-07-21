@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     api_prefix: str = "/api"
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
     storage_root: Path = Path(__file__).resolve().parents[2] / "data"
+    chat_audit_log_path: Path | None = None
     uploads_dir: Path | None = None
     chroma_dir: Path | None = None
     documents_manifest: Path | None = None
@@ -50,6 +51,8 @@ class Settings(BaseSettings):
     )
 
     def model_post_init(self, __context: object) -> None:
+        if self.chat_audit_log_path is None:
+            self.chat_audit_log_path = self.storage_root / "chat_audit.txt"
         if self.uploads_dir is None:
             self.uploads_dir = self.storage_root / "uploads"
         if self.chroma_dir is None:
@@ -59,6 +62,7 @@ class Settings(BaseSettings):
 
     def ensure_storage(self) -> None:
         self.storage_root.mkdir(parents=True, exist_ok=True)
+        self.chat_audit_log_path.parent.mkdir(parents=True, exist_ok=True)
         self.uploads_dir.mkdir(parents=True, exist_ok=True)
         self.chroma_dir.mkdir(parents=True, exist_ok=True)
         if not self.documents_manifest.exists():

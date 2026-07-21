@@ -10,6 +10,7 @@ DocTongue is a simple full-stack document Q&A application. Users upload PDFs int
 - Search across multiple documents in a single shared collection
 - Chat-style grounded Q&A
 - Sliding window chat memory (last 3 chat turns with question and answer) with query reformulation before retrieval
+- Plain-text chat audit logging with timestamp, question, and answer saved to `backend/data/chat_audit.txt`
 - Visible citations with filename, page number, excerpt, and score
 - Input guardrails for prompt-injection attempts and restricted explicit sexual content
 - Document listing and deletion
@@ -52,6 +53,7 @@ For local development in a dev container, leave `NEXT_PUBLIC_API_BASE_URL` empty
 - `CHAT_MEMORY_WINDOW` controls how many recent chat turns are kept per chat session (default `3`).
 - `CHAT_MEMORY_TTL_SECONDS` sets optional expiration for each session memory key in Redis.
 - `REDIS_URL` and `REDIS_CHAT_KEY_PREFIX` configure where chat memory is stored.
+- `CHAT_AUDIT_LOG_PATH` optionally overrides the plain-text audit log file path.
 
 ### Sliding Window Buffer with Query Reformulation
 
@@ -63,6 +65,8 @@ DocTongue uses a lightweight conversational memory pattern for retrieval:
 4. The current question and generated answer are appended back into memory and the window is trimmed to the configured size.
 
 If Redis is not running, the backend falls back to an in-process memory store so local development still works.
+
+Each completed chat is also appended to a plain-text audit log with its timestamp, question, and answer. By default, that file is stored at `backend/data/chat_audit.txt`.
 
 ## Local setup
 

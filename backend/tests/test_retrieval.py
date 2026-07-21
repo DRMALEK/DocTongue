@@ -76,6 +76,31 @@ def test_answer_question_returns_not_found_when_no_hits() -> None:
     ]
 
 
+def test_answer_question_appends_audit_log(tmp_path) -> None:
+    settings = Settings(storage_root=tmp_path / "data")
+    settings.ensure_storage()
+    answer_generator = AnswerGenerator(settings)
+    vector_store = StubVectorStore([])
+    memory_store = StubMemoryStore()
+
+    response = answer_question(
+        question="What is the retention policy?",
+        session_id="test-session",
+        settings=settings,
+        vector_store=vector_store,
+        answer_generator=answer_generator,
+        chat_memory_store=memory_store,
+    )
+
+    audit_text = settings.chat_audit_log_path.read_text(encoding="utf-8")
+
+    assert response.answer in audit_text
+    assert "Question: What is the retention policy?" in audit_text
+    assert "Answer: I could not find an answer in the indexed documents." in audit_text
+    assert "Timestamp: " in audit_text
+    assert audit_text.endswith("---\n")
+
+
 def test_answer_question_rejects_weak_support() -> None:
     settings = Settings()
     answer_generator = AnswerGenerator(settings)

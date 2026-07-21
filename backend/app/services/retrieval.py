@@ -15,6 +15,8 @@ document excerpts used as citations.
 
 import logging
 import re
+from datetime import datetime, timezone
+from threading import Lock
 
 from app.core.config import Settings
 from app.models.schemas import ChatResponse, Citation
@@ -25,6 +27,7 @@ from app.services.vector_store import SearchResult, VectorStore
 
 logger = logging.getLogger(__name__)
 CITATION_MARKER_RE = re.compile(r"\[(\d+)\]")
+AUDIT_LOG_LOCK = Lock()
 
 
 def answer_question(
@@ -90,7 +93,33 @@ def answer_question(
         chat_memory_store.append_turn(session_id, question, response.answer)
     except Exception:
         logger.exception("Failed to append chat turn to memory for session %s", session_id)
+    try:
+        _append_chat_audit_log(
+            question=question,
+            answer=response.answer,
+            settings=settings,
+        )
+    except Exception:
+        logger.exception("Failed to append chat audit log for session %s", session_id)
     return response
+
+
+def _append_chat_audit_log(
+    question: str,
+    answer: str,
+    settings: Settings,
+) -> None:
+    timestamp = datetime.now(timezone.utc).isoformat()
+    entry = (
+        f"Timestamp: {timestamp}\n"
+        f"Question: {question}\n"
+        f"Answer: {answer}\n"
+        "---\n"
+    )
+    with AUDIT_LOG_LOCK:
+        settings.chat_audit_log_path.parent.mkdir(parents=True, exist_ok=True)
+        with settings.chat_audit_log_path.open("a", encoding="utf-8") as audit_log:
+            audit_log.write(entry)
 
 
 def _filter_grounded_hits(question: str, hits: list[SearchResult]) -> list[SearchResult]:
