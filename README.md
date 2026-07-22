@@ -2,6 +2,19 @@
 
 ![DocTongue intro image](assets/dashboard.png)
 
+## Table of Contents
+
+- [1) Project Description](#1-project-description)
+- [2) Setup (Containerization + ENV)](#2-setup-containerization--env)
+- [3) Architecture](#3-architecture)
+- [4) Moving to Production on Hyper-Scalers (AWS / GCP / Azure / Cloudflare)](#4-moving-to-production-on-hyper-scalers-aws--gcp--azure--cloudflare)
+- [5) RAG/LLM Approach and Decisions](#5-ragllm-approach-and-decisions)
+- [6) Technical Decisions Taken](#6-technical-decisions-taken)
+- [7) How Coding Agent (GitHub Copilot) Was Used](#7-how-coding-agent-github-copilot-was-used)
+- [8) What We'd Do Differently With More Time](#8-what-wed-do-differently-with-more-time)
+- [9) Screenshots and Example Video](#9-screenshots-and-example-video)
+- [10) Licence](#10-licence)
+
 ## 1) Project Description
 
 DocTongue is a full-stack Retrieval-Augmented Generation (RAG) application for document question answering.
@@ -100,12 +113,11 @@ Architecture diagram (SVG):
 
 Key considerations before production rollout:
 
-- **Authentication and authorization**: Add `OIDC/OAuth2` login and role-based access control.
 - **Identity and secrets**: Use managed identity/IAM roles and secret stores (Azure Key Vault / AWS Secrets Manager) instead of static secrets in files.
 - **Storage hardening**: Move uploads and artifacts to object storage (Azure Blob / AWS S3) lifecycle policies, and backups.
-- **Vector database strategy**: Use a managed vector store or run Chroma with persistent volumes, backups, and DR procedures.
+- **Vector database**: Use a managed vector store.
 - **Networking and security**: Use private networking, TLS.
-- **Observability**: Centralize logs, traces, metrics, dashboards, and on-call alerts.
+- **Observability**: Centralize logs, traces.
 - **Scalability and reliability**: Add autoscaling for API/workers, queue-based ingestion for large files.
 - **Compliance and governance**: Define data retention, residency, recovery and backup.
 
@@ -122,7 +134,7 @@ Key considerations before production rollout:
 | Retrieval strategy | Dense-only retrieval vs hybrid retrieval and reranking. | **Vector top-k + lightweight grounding filters** implemented now for a simple and stable baseline. |
 | Prompt & context management | Stateless prompt only vs session-aware reformulation and memory. | **Grounded system prompt + sliding window memory** to keep answers citation-based while improving follow-up query resolution. |
 | Guardrails | No input filter vs explicit pre-check policy layer. | **Input guardrails enabled** for prompt-injection patterns and explicit sexual content at the `/api/chat` boundary. |
-| Quality control | No judge, heuristic-only, or LLM-as-judge with fallback. | **Optional `deepeval` judge** with deterministic lexical fallback for reliability when external judge execution fails. |
+| Quality control | No judge, heuristic-only, or LLM-as-judge with fallback. | Optional `deepeval` judge|
 | Observability | Console-only logs vs structured logs + audit artifacts. | **Application logging + chat audit file** for runtime diagnostics and future auditing workflows. |
 
 ## 6) Technical Decisions Taken
@@ -133,13 +145,6 @@ Current simple decisions:
 - Chroma local persistence for quick local development and zero-extra infrastructure.
 - LiteLLM abstraction to keep model providers swappable without coupling business logic to one SDK.
 - Guardrails + optional quality control path to improve safety and answer reliability.
-
-If more time is available:
-
-- Async ingestion pipeline with queue/worker model.
-- Better retrieval evaluation dataset and automated scoring.
-- Hybrid retrieval (dense + lexical) and reranking.
-- Production-grade observability and SLO definitions.
 
 Engineering standards document:
 
@@ -158,7 +163,6 @@ All generated output was reviewed and adjusted manually before acceptance.
 ## 8) What We'd Do Differently With More Time
 
 - Implement user authentication / authoriztaion.
-- OCR pipeline for scanned PDFs.
 - Better citation UX (page-level and highlighted spans).
 - Cloud-native deployment templates (Azure/AWS).
 
@@ -176,6 +180,3 @@ If embedded playback is unsupported, open: [Demo video](assets/simplescreenrecor
 
 No licence file is defined yet in this repository.
 
----
-
-Project note: The rationale in this document reflects implementation-specific engineering choices made in this repository, reviewed and edited by the project author.
