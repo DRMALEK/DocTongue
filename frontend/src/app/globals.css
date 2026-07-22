@@ -1,21 +1,56 @@
 @import "tailwindcss";
 
 :root {
-  --background: #1f2329;
-  --foreground: #e2e8f0;
+  /* Dark theme (default) */
+  --dt-bg-base: #1f2329;
+  --dt-bg-panel: #252a31;
+  --dt-bg-chat: #232830;
+  --dt-bg-surface: #20252c;
+  --dt-bg-surface-hover: #242a33;
+  --dt-bg-surface-hover2: #2c323c;
+  --dt-bg-msg-user: #1b2027;
+  --dt-bg-msg-assistant: #2a3039;
+  --dt-bg-btn-hover: #343b46;
+  --dt-border-base: #343a43;
+  --dt-border-inner: #3a404a;
+  --dt-border-btn: #4b535f;
+  --dt-text-primary: #f1f5f9;
+  --dt-text-secondary: #e2e8f0;
+  --dt-text-tertiary: #cbd5e1;
+  --dt-text-muted: #94a3b8;
+}
+
+/* Light theme overrides */
+.light {
+  --dt-bg-base: #f0f4f8;
+  --dt-bg-panel: #ffffff;
+  --dt-bg-chat: #f8fafc;
+  --dt-bg-surface: #f1f5f9;
+  --dt-bg-surface-hover: #e8edf3;
+  --dt-bg-surface-hover2: #dde3ea;
+  --dt-bg-msg-user: #e2e8f0;
+  --dt-bg-msg-assistant: #ffffff;
+  --dt-bg-btn-hover: #cbd5e1;
+  --dt-border-base: #e2e8f0;
+  --dt-border-inner: #cbd5e1;
+  --dt-border-btn: #94a3b8;
+  --dt-text-primary: #1e293b;
+  --dt-text-secondary: #334155;
+  --dt-text-tertiary: #475569;
+  --dt-text-muted: #64748b;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--dt-bg-base);
+  --color-foreground: var(--dt-text-primary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
   min-height: 100vh;
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--dt-bg-base);
+  color: var(--dt-text-primary);
 }
 
 * {
@@ -25,3 +60,15 @@ body {
 ::selection {
   background: rgba(148, 163, 184, 0.35);
 }
+
+/* Typing indicator animation */
+@keyframes typing-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-6px); opacity: 1; }
+}
+
+.typing-dot {
+  animation: typing-bounce 1.4s infinite ease-in-out;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }

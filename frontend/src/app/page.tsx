@@ -18,6 +18,7 @@ export default function Home() {
   const [chatPending, setChatPending] = useState(false);
   const [documentError, setDocumentError] = useState<string | null>(null);
   const [chatError, setChatError] = useState<string | null>(null);
+  const [isDark, setIsDark] = useState(true);
 
   async function loadDocuments() {
     setLoadingDocuments(true);
@@ -114,31 +115,40 @@ export default function Home() {
   }
 
   return (
-    <main className="flex h-screen flex-col overflow-hidden bg-[#1f2329] px-3 py-3 text-slate-100 sm:px-4">
-      <section className="mx-auto flex w-full max-w-[1600px] items-center justify-between rounded-xl border border-[#343a43] bg-[#1f2329] px-3 py-2">
+    <main className={`flex h-screen flex-col overflow-hidden bg-[var(--dt-bg-base)] px-3 py-3 text-[var(--dt-text-primary)] sm:px-4${isDark ? '' : ' light'}`}>
+      <section className="mx-auto flex w-full max-w-[1600px] items-center justify-between rounded-xl border border-[var(--dt-border-base)] bg-[var(--dt-bg-base)] px-3 py-2">
         <div className="flex items-center gap-2.5">
           <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[conic-gradient(from_210deg_at_50%_50%,#5aa4ff,_#7cc1ff,_#b4d7ff,_#5aa4ff)] text-[10px] font-bold text-[#0f172a]">
             D
           </span>
-          <h1 className="text-sm font-semibold tracking-wide text-slate-100">DocTongue</h1>
+          <h1 className="text-sm font-semibold tracking-wide text-[var(--dt-text-primary)]">DocTongue</h1>
         </div>
         <div className="flex items-center gap-2 text-xs">
           <button
             type="button"
-            className="rounded-full border border-[#3a404a] bg-[#252a31] px-3 py-1.5 text-slate-200 transition hover:bg-[#2c323c]"
+            onClick={() => setIsDark((d) => !d)}
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[var(--dt-border-inner)] bg-[var(--dt-bg-panel)] text-sm transition hover:bg-[var(--dt-bg-surface-hover2)]"
+            aria-label="Toggle theme"
+            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDark ? '☀️' : '🌙'}
+          </button>
+          <button
+            type="button"
+            className="rounded-full border border-[var(--dt-border-inner)] bg-[var(--dt-bg-panel)] px-3 py-1.5 text-[var(--dt-text-secondary)] transition hover:bg-[var(--dt-bg-surface-hover2)]"
           >
             Share
           </button>
           <button
             type="button"
-            className="rounded-full border border-[#3a404a] bg-[#252a31] px-3 py-1.5 text-slate-200 transition hover:bg-[#2c323c]"
+            className="rounded-full border border-[var(--dt-border-inner)] bg-[var(--dt-bg-panel)] px-3 py-1.5 text-[var(--dt-text-secondary)] transition hover:bg-[var(--dt-bg-surface-hover2)]"
           >
             Settings
           </button>
         </div>
       </section>
 
-      <section className="mx-auto mt-3 flex min-h-0 w-full max-w-[1600px] flex-1 overflow-hidden rounded-xl border border-[#343a43] bg-[#252a31]">
+      <section className="mx-auto mt-3 flex min-h-0 w-full max-w-[1600px] flex-1 overflow-hidden rounded-xl border border-[var(--dt-border-base)] bg-[var(--dt-bg-panel)]">
         <div className="grid h-full min-h-0 w-full lg:grid-cols-[320px_1fr]">
           <DocumentPanel
             documents={documents}
@@ -158,6 +168,17 @@ export default function Home() {
           />
         </div>
       </section>
+      {/* User badge */}
+      <div className="fixed bottom-4 left-4 z-50 flex items-center gap-2.5 rounded-full border border-[var(--dt-border-inner)] bg-[var(--dt-bg-panel)] px-3 py-1.5 shadow-lg">
+        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-xs font-bold text-white">
+          A
+        </div>
+        <div className="leading-tight">
+          <p className="text-xs font-semibold text-[var(--dt-text-primary)]">Alex Carter</p>
+          <p className="text-[10px] text-[var(--dt-text-muted)]">Pro plan</p>
+        </div>
+        <span className="ml-0.5 h-2 w-2 rounded-full bg-emerald-400" title="Online" />
+      </div>
     </main>
   );
 }

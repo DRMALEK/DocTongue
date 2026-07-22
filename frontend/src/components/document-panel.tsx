@@ -44,22 +44,22 @@ export function DocumentPanel({
   }
 
   return (
-    <section className="h-full bg-[#252a31] p-3 text-slate-100 lg:border-r lg:border-[#343a43]">
+    <section className="h-full bg-[var(--dt-bg-panel)] p-3 text-[var(--dt-text-primary)] lg:border-r lg:border-[var(--dt-border-base)]">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold tracking-wide text-slate-200">
+          <p className="text-xs font-semibold tracking-wide text-[var(--dt-text-secondary)]">
             Sources
           </p>
         </div>
-        <div className="rounded-md border border-[#3a404a] bg-[#20252c] px-2 py-0.5 text-xs text-slate-300">
+        <div className="rounded-md border border-[var(--dt-border-inner)] bg-[var(--dt-bg-surface)] px-2 py-0.5 text-xs text-[var(--dt-text-tertiary)]">
           {documents.length} docs
         </div>
       </div>
 
       <form className="mt-4 space-y-3" onSubmit={handleSubmit}>
-        <label className="flex cursor-pointer flex-col items-center justify-center rounded-full border border-[#3a404a] bg-[#20252c] px-4 py-2 text-center transition hover:bg-[#242a33]">
-          <span className="text-sm font-medium text-slate-100">+ {uploadLabel}</span>
-          <span className="mt-1 text-xs text-slate-400">PDF only, max 50 MB</span>
+        <label className="flex cursor-pointer flex-col items-center justify-center rounded-full border border-[var(--dt-border-inner)] bg-[var(--dt-bg-surface)] px-4 py-2 text-center transition hover:bg-[var(--dt-bg-surface-hover)]">
+          <span className="text-sm font-medium text-[var(--dt-text-primary)]">+ {uploadLabel}</span>
+          <span className="mt-1 text-xs text-[var(--dt-text-muted)]">PDF only, max 50 MB</span>
           <input
             className="sr-only"
             type="file"
@@ -73,7 +73,7 @@ export function DocumentPanel({
         </label>
 
         <button
-          className="inline-flex w-full items-center justify-center rounded-full border border-[#3a404a] bg-[#20252c] px-4 py-2 text-sm font-semibold text-slate-100 transition hover:bg-[#2a3039] disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex w-full items-center justify-center rounded-full border border-[var(--dt-border-inner)] bg-[var(--dt-bg-surface)] px-4 py-2 text-sm font-semibold text-[var(--dt-text-primary)] transition hover:bg-[var(--dt-bg-msg-assistant)] disabled:cursor-not-allowed disabled:opacity-60"
           type="submit"
           disabled={!selectedFiles.length || uploadPending}
         >
@@ -89,13 +89,13 @@ export function DocumentPanel({
 
       <div className="mt-5 space-y-2.5">
         {loading ? (
-          <div className="rounded-lg border border-[#3a404a] bg-[#20252c] px-3 py-3 text-sm text-slate-300">
+          <div className="rounded-lg border border-[var(--dt-border-inner)] bg-[var(--dt-bg-surface)] px-3 py-3 text-sm text-[var(--dt-text-tertiary)]">
             Loading...
           </div>
         ) : null}
 
         {!loading && !documents.length ? (
-          <div className="rounded-lg border border-[#3a404a] bg-[#20252c] px-3 py-3 text-sm text-slate-300">
+          <div className="rounded-lg border border-[var(--dt-border-inner)] bg-[var(--dt-bg-surface)] px-3 py-3 text-sm text-[var(--dt-text-tertiary)]">
             No docs yet.
           </div>
         ) : null}
@@ -103,19 +103,19 @@ export function DocumentPanel({
         {documents.map((document) => (
           <article
             key={document.id}
-            className="rounded-lg border border-[#3a404a] bg-[#20252c] p-3"
+            className="rounded-lg border border-[var(--dt-border-inner)] bg-[var(--dt-bg-surface)] p-3"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-sm font-medium text-slate-100">
+                <h3 className="text-sm font-medium text-[var(--dt-text-primary)]">
                   {document.filename}
                 </h3>
-                <p className="mt-1 text-xs text-slate-400">
+                <p className="mt-1 text-xs text-[var(--dt-text-muted)]">
                   {document.page_count} pages • {document.chunk_count} chunks
                 </p>
               </div>
               <button
-                className="rounded-full border border-[#4b535f] px-2.5 py-1 text-xs font-medium text-slate-300 transition hover:border-red-400 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-full border border-[var(--dt-border-btn)] px-2.5 py-1 text-xs font-medium text-[var(--dt-text-tertiary)] transition hover:border-red-400 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-60"
                 type="button"
                 disabled={deletingId === document.id}
                 onClick={() => onDelete(document.id)}

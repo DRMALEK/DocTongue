@@ -15,6 +15,9 @@ DocTongue is a simple full-stack document Q&A application. Users upload PDFs int
 - The system rejects explicit sexual or nudity-related requests.
 - The system allows users to view indexed documents and delete documents from the collection.
 - The system provides an optional response quality control with deepeval (LLM-as-judge) and a safe lexical fallback
+- The UI shows an animated typing indicator while the assistant is generating a response.
+- The UI supports light and dark themes toggled via a button in the top navigation bar.
+- The UI displays a persistent user badge in the bottom-left corner.
 
 
 ## Stack

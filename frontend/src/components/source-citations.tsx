@@ -14,11 +14,11 @@ export function SourceCitations({ citations }: SourceCitationsProps) {
   );
 
   return (
-    <div className="mt-3 rounded-lg border border-[#3a404a] bg-[#20252c] p-3">
-      <ol className="space-y-1.5 text-sm leading-6 text-slate-300">
+    <div className="mt-3 rounded-lg border border-[var(--dt-border-inner)] bg-[var(--dt-bg-surface)] p-3">
+      <ol className="space-y-1.5 text-sm leading-6 text-[var(--dt-text-tertiary)]">
         {sourceFilenames.map((filename, index) => (
           <li key={filename}>
-            <span className="font-semibold text-slate-400">[{index + 1}]</span>{" "}
+            <span className="font-semibold text-[var(--dt-text-muted)]">[{index + 1}]</span>{" "}
             <span>{filename}</span>
           </li>
         ))}
