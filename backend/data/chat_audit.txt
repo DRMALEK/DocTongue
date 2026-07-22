@@ -38,3 +38,438 @@ Timestamp: 2026-07-22T10:42:39.471540+00:00
 Question: What the doc is about?
 Answer: The document is about a coding exercise that involves building a small web application featuring an "agent" that can accept user goals in natural language, create a plan, and execute tasks through both server-side and client-side actions. The exercise emphasizes the integration of natural-language tooling, agentic coding workflows, and the demonstration of real web interactions. Key requirements include providing a clean user interface, maintaining an activity log, implementing server-side tools, and ensuring observable client-side actions. The goal is to showcase end-to-end functionality within a limited time frame, with specific deliverables such as a demo video and a README file detailing the project [1].
 ---
+Timestamp: 2026-07-22T11:21:17.809884+00:00
+Question: what is what
+Answer: I could not find a definition or explanation for "what is what" in the indexed documents.
+---
+Timestamp: 2026-07-22T11:35:49.149549+00:00
+Question: What are the two companies to whom we need to submit the homeworks?
+Answer: I could not find the names of the two companies to whom you need to submit the homeworks in the indexed documents.
+---
+Timestamp: 2026-07-22T11:36:03.956517+00:00
+Question: What are the two homeworks?
+Answer: The two homeworks mentioned in the context are:
+
+1. Build a fullstack web application that functions as a conversational AI assistant, with options including:
+   - Chat With Your Docs
+   - Code Documentation Assistant
+   - Meeting Intelligence System
+   - Career Intelligence Assistant [1].
+
+2. Implement specific functionalities within the application, such as:
+   - Agent behavior that accepts user goals and produces a plan.
+   - Server-side actions that perform real work.
+   - Client-side actions that trigger observable UI behaviors.
+   - A knowledge mechanism for the agent [2].
+---
+Timestamp: 2026-07-22T11:36:30.308157+00:00
+Question: What are the two homeworks?
+Answer: The two homeworks mentioned in the context are:
+
+1. Build a fullstack web application that serves as a conversational AI assistant, with options including:
+   - Chat With Your Docs
+   - Code Documentation Assistant
+   - Meeting Intelligence System
+   - Career Intelligence Assistant [1].
+
+2. Implement specific functionalities within the application, such as:
+   - Agent behavior that accepts user goals and executes steps while displaying an activity log.
+   - Server-side actions that perform real work, and client-side actions that trigger observable UI behaviors [2].
+---
+Timestamp: 2026-07-22T11:36:57.364700+00:00
+Question: Which of the two homeworks give more flexiablity?
+Answer: The first homework assignment provides more flexibility. It allows you to choose from multiple options for building a fullstack web application, including a conversational AI assistant that can answer questions based on various types of content, such as documents, codebases, meeting transcripts, or resumes. This variety in options gives you the freedom to select a project that aligns with your interests and skills [1]. 
+
+In contrast, the second homework focuses on implementing specific server-side and client-side actions, which are more prescriptive and limit the scope of creativity compared to the first assignment [2].
+---
+Timestamp: 2026-07-22T11:40:05.658928+00:00
+Question: What are the two homeworks?
+Answer: The two homeworks mentioned in the context are:
+
+1. Build a fullstack web application that serves as a conversational AI assistant, with options including:
+   - Chat With Your Docs
+   - Code Documentation Assistant
+   - Meeting Intelligence System
+   - Career Intelligence Assistant [1].
+
+2. Implement specific functionalities within the application, such as:
+   - Agent behavior that accepts user goals and produces a plan.
+   - Server-side actions that perform real work.
+   - Client-side actions that trigger observable UI behaviors.
+   - A knowledge mechanism for the agent to use [2].
+---
+Timestamp: 2026-07-22T11:40:35.426023+00:00
+Question: Which of the twos is easier and simpler?
+Answer: I could not find a direct comparison of which of the two options is easier and simpler in the indexed documents. The options presented (Chat With Your Docs and Code Documentation Assistant) do not have explicit evaluations of their complexity or simplicity.
+---
+Timestamp: 2026-07-22T11:40:58.067396+00:00
+Question: Which give more flexablity?
+Answer: I could not find a comparison of flexibility between the options provided in the indexed documents.
+---
+Timestamp: 2026-07-22T11:41:23.558896+00:00
+Question: What are the two homeworks?
+Answer: The two homeworks mentioned in the context are:
+
+1. Build a fullstack web application that serves as a conversational AI assistant, with options including:
+   - Chat With Your Docs
+   - Code Documentation Assistant
+   - Meeting Intelligence System
+   - Career Intelligence Assistant [1].
+
+2. Implement specific functionalities within the application, such as:
+   - Agent behavior that accepts user goals and executes steps while displaying an activity log.
+   - Server-side actions that perform real work, and client-side actions that trigger observable UI behaviors [2].
+---
+Timestamp: 2026-07-22T11:41:48.765527+00:00
+Question: Which of the homeworks seems to give more flexablity in terms of the options?
+Answer: The homework that seems to give more flexibility in terms of options is the one that allows you to build a fullstack web application with a choice of tech stack and various project options. Specifically, you can choose from four different project types: 
+
+1. Chat With Your Docs
+2. Code Documentation Assistant
+3. Meeting Intelligence System
+4. Career Intelligence Assistant
+
+Each option addresses different use cases and allows for creativity in implementation, thus providing a range of choices for students to select from based on their interests and skills [1].
+---
+Timestamp: 2026-07-22T11:42:34.817479+00:00
+Question: What are the two homeworks?
+Answer: The two homeworks mentioned in the context are:
+
+1. Build a fullstack web application that serves as a conversational AI assistant, with options including:
+   - Chat With Your Docs
+   - Code Documentation Assistant
+   - Meeting Intelligence System
+   - Career Intelligence Assistant [1].
+
+2. Implement specific functionalities within the application, such as:
+   - Agent behavior that accepts user goals and produces a plan.
+   - Server-side actions that perform real work.
+   - Client-side actions that trigger observable UI behaviors.
+   - A knowledge mechanism for the agent to use [2].
+---
+Timestamp: 2026-07-22T11:43:01.533299+00:00
+Question: Which of the two homeworks give more flexability in term of options?
+Answer: The two homeworks that provide more flexibility in terms of options are the ones described in Source 3 and Source 4. 
+
+Source 3 outlines four distinct options for building a conversational AI assistant, including:
+1. Chat With Your Docs
+2. Code Documentation Assistant
+3. Meeting Intelligence System
+4. Career Intelligence Assistant
+
+Each option allows for different types of applications and use cases, giving students the freedom to choose based on their interests and strengths.
+
+Source 4 continues with the Career Intelligence Assistant option and emphasizes the importance of selecting the option that excites the student the most, further highlighting the flexibility in choice.
+
+In contrast, Source 5 describes a more structured coding exercise with specific requirements but does not provide multiple options for the type of application to build, thus offering less flexibility. 
+
+Therefore, the homeworks in Sources 3 and 4 provide more options and flexibility compared to Source 5.
+---
+Timestamp: 2026-07-22T11:43:33.538967+00:00
+Question: What are the two homeworks?
+Answer: The two homeworks mentioned in the context are:
+
+1. Build a fullstack web application that serves as a conversational AI assistant, with options including:
+   - Chat With Your Docs
+   - Code Documentation Assistant
+   - Meeting Intelligence System
+   - Career Intelligence Assistant [1].
+
+2. Implement specific functionalities within the application, such as:
+   - Agent behavior that accepts user goals and produces a plan.
+   - Server-side actions that perform real work.
+   - Client-side actions that trigger observable UI behaviors.
+   - A knowledge mechanism for the agent.
+   - A clean UI that displays conversation, agent plans, and activity logs [2].
+---
+Timestamp: 2026-07-22T11:44:00.299593+00:00
+Question: Which homework is more flexiable in term of the topic?
+Answer: The homework that is more flexible in terms of the topic is found in Source 3. It allows you to choose from multiple options for building a fullstack web application, including a system that answers questions about documents, analyzes code, or processes meeting transcripts. This variety provides a broader range of topics compared to the other sources, which focus on specific tasks or functionalities within a more constrained framework.
+---
+Timestamp: 2026-07-22T11:44:18.198093+00:00
+Question: Which homework is more flexiable in term of the topic?
+Answer: The homework that is more flexible in terms of the topic is from Source 3, where you can choose from multiple options to build a fullstack web application. The options include creating a system for document Q&A, a code documentation assistant, a meeting intelligence system, or a career intelligence assistant. This variety allows for a broader range of topics compared to the other sources, which are more focused on specific tasks or functionalities within a web application.
+---
+Timestamp: 2026-07-22T11:47:24.479943+00:00
+Question: What are the two homeworks?
+Answer: The two homeworks are:
+
+1. Build a fullstack web application that includes a conversational AI assistant, with options such as a system that answers questions about document content, ingests a codebase, analyzes meeting transcripts, or builds a career intelligence assistant [1].
+
+2. Implement specific functionalities within the application, including at least three server-side tools/actions and two client-side actions, along with a knowledge mechanism and a clean UI that displays conversation, agent plans, and activity logs [2].
+---
+Timestamp: 2026-07-22T11:47:53.721641+00:00
+Question: What are the topics of the first homework?
+Answer: The first homework involves building a fullstack web application with a focus on creating a conversational AI assistant. The topics include:
+
+1. **Options for the AI Assistant**:
+   - **Chat With Your Docs**: A system that answers questions about content from a document collection.
+   - **Code Documentation Assistant**: A system that ingests a codebase and answers questions about it.
+   - **Meeting Intelligence System**: A system that analyzes meeting transcripts and answers questions about discussions and action items.
+   - **Career Intelligence Assistant**: A system that analyzes resumes against job descriptions and answers questions about fit and skill gaps.
+
+2. **Core Requirements**:
+   - Implement server-side tools/actions that perform real work.
+   - Implement client-side actions that trigger observable UI behaviors.
+   - Add a knowledge mechanism for the agent.
+   - Provide a clean UI that displays conversation, agent plan, and results/artifacts [1][2][1].
+---
+Timestamp: 2026-07-22T11:50:03.836377+00:00
+Question: What are the topic of two homeworks?
+Answer: The topics of the two homeworks are:
+
+1. **Build a fullstack web application**: This includes options such as creating a conversational AI assistant that can answer questions about documents, code documentation, or meeting transcripts [1].
+
+2. **Career Intelligence Assistant**: This involves building a system that analyzes resumes against job descriptions, allowing users to upload a resume and multiple job postings to answer questions about fit, skill gaps, and experience alignment [1].
+---
+Timestamp: 2026-07-22T11:50:58.707388+00:00
+Question: What are the topic of two homeworks?
+Answer: The topics of the two homeworks are:
+
+1. **Build a fullstack web application**: This involves creating a conversational AI assistant with options such as a system that answers questions about document content, a code documentation assistant, or a meeting intelligence system that analyzes transcripts [1].
+
+2. **Career Intelligence Assistant**: This homework requires building a system that analyzes resumes against job descriptions, allowing users to upload a resume and multiple job postings to answer questions about fit, skill gaps, and experience alignment [1].
+---
+Timestamp: 2026-07-22T11:51:11.411922+00:00
+Question: What are the topics of two homeworks?
+Answer: The topics of the two homeworks are:
+
+1. **Build a fullstack web application**: This involves creating a conversational AI assistant with options such as a system that answers questions about documents, a code documentation assistant, or a meeting intelligence system that analyzes transcripts [1].
+
+2. **Implement server-side and client-side actions**: This includes creating server-side tools that perform real work and client-side actions that trigger observable UI behaviors, along with a knowledge mechanism for the agent [2].
+---
+Timestamp: 2026-07-22T11:51:30.876645+00:00
+Question: What are the two homeworks?
+Answer: The two homeworks mentioned in the provided excerpts are:
+
+1. Build a fullstack web application with a choice of tech stack and a conversational AI assistant, selecting from options such as:
+   - Chat With Your Docs
+   - Code Documentation Assistant
+   - Meeting Intelligence System
+   - Career Intelligence Assistant [1].
+
+2. Create a system that analyzes resumes against job descriptions, which includes uploading a resume and multiple job postings, and answering questions about fit, skill gaps, experience alignment, and interview preparation [1].
+---
+Timestamp: 2026-07-22T12:25:45.056726+00:00
+Question: What are the two homeworks?
+Answer: The two homeworks mentioned in the provided excerpts are:
+
+1. Build a system that analyzes resumes against job descriptions, which includes uploading a resume and multiple job postings, and answering questions about fit, skill gaps, experience alignment, and interview preparation [1].
+   
+2. Build a small agentic web app in a 2–3 hour timebox that accepts a user goal in natural language, produces a lightweight plan, and completes the task by taking actions on both server-side and client-side [2].
+---
+Timestamp: 2026-07-22T12:27:52.423167+00:00
+Question: What are the two homeworks in the two pdfs
+Answer: I could not find specific information about the two homeworks in the indexed documents.
+---
+Timestamp: 2026-07-22T12:28:09.830462+00:00
+Question: What are topic of the homeworks
+Answer: The topics of the homeworks include:
+
+1. **Chat With Your Docs**: Building a system that answers questions about content from a document collection (PDFs, text files, etc.) [1].
+2. **Code Documentation Assistant**: Creating a system that ingests a codebase and answers questions about the code, such as functionality, API endpoints, and dependencies [1].
+3. **Meeting Intelligence System**: Developing a system that analyzes meeting transcripts and answers questions about discussions, decisions, and action items [1].
+4. **Career Intelligence Assistant**: Building a system that analyzes resumes against job descriptions, answering questions about fit, skill gaps, and experience alignment [1].
+
+These options allow for a variety of approaches and technologies to be used in the projects.
+---
+Timestamp: 2026-07-22T12:29:43.715154+00:00
+Question: What are topic of the homeworks
+Answer: The topics of the homeworks include:
+
+1. **Chat With Your Docs**: Building a system that answers questions about content from a document collection (PDFs, text files, etc.) [1].
+2. **Code Documentation Assistant**: Creating a system that ingests a codebase and answers questions about the code, such as functionality, API endpoints, and dependencies [1].
+3. **Meeting Intelligence System**: Developing a system that analyzes meeting transcripts and answers questions about discussions, decisions, and action items [1].
+4. **Career Intelligence Assistant**: Building a system that analyzes resumes against job descriptions, answering questions about fit, skill gaps, and experience alignment [1]. 
+
+These options allow for a variety of applications in the realm of conversational AI and document analysis.
+---
+Timestamp: 2026-07-22T12:30:12.924013+00:00
+Question: what homework mentioned in the docs?
+Answer: The homework mentioned in the documents involves building a fullstack web application with a focus on creating a conversational AI assistant. There are several options provided for the project, including:
+
+1. **Chat With Your Docs**: A system that answers questions about content from a document collection (PDFs, text files, etc.).
+2. **Code Documentation Assistant**: A system that ingests a codebase and answers questions about it.
+3. **Meeting Intelligence System**: A system that analyzes meeting transcripts and answers questions about discussions, decisions, and action items.
+4. **Career Intelligence Assistant**: A system that analyzes resumes against job descriptions and answers questions about fit and skill gaps.
+
+The assignment emphasizes the importance of engineering philosophy, creativity in UI/UX design, and the thought process behind technical decisions [1].
+---
+Timestamp: 2026-07-22T12:30:32.063176+00:00
+Question: in all the docs
+Answer: I could not find a specific answer to your question in the indexed documents. Please provide more details or clarify your question.
+---
+Timestamp: 2026-07-22T12:30:49.585702+00:00
+Question: in all the docs
+Answer: I could not find a specific answer to your question in the indexed documents. Please provide more details or clarify your question.
+---
+Timestamp: 2026-07-22T12:31:35.046731+00:00
+Question: What are the homework options?
+Answer: The homework options include the following:
+
+1. **Chat With Your Docs**: Build a system that answers questions about content from a document collection (PDFs, text files, or any format you choose) [1].
+2. **Code Documentation Assistant**: Build a system that ingests a codebase (GitHub repo or local files) and answers questions about the code, such as how it works, where functionality is implemented, API endpoints, dependencies, etc. [1].
+3. **Meeting Intelligence System**: Build a system that analyzes meeting transcripts and answers questions about discussions, decisions, and action items. Transcripts should be text files with speaker labels and timestamps [1].
+4. **Career Intelligence Assistant**: Build a system that analyzes resumes against job descriptions, allowing users to upload a resume and multiple job postings, then answer questions about fit, skill gaps, experience alignment, and interview preparation [1].
+
+You can choose the option that excites you the most!
+---
+Timestamp: 2026-07-22T12:31:58.317415+00:00
+Question: what are the required readme?
+Answer: The required README should include the following elements:
+
+1. Quick setup instructions [1].
+2. Architecture overview (a simple diagram is great but not required) [1].
+3. What would be required to productionize your solution, make it scalable, and deploy it on a hyper-scaler such as AWS, GCP, Azure, or Cloudflare [1].
+4. RAG/LLM approach & decisions: Choices considered and final choice for LLM/embedding model/vector database/orchestration framework, prompt & context management, guardrails, quality, observability [1].
+5. Key technical decisions you made and why [1].
+6. Engineering standards you’ve followed (and maybe some that you skipped) [1].
+7. How you used AI tools in your development process [1].
+8. What you'd do differently with more time [1].
+9. Acknowledgment of any edge cases not handled [1].
+10. Your thoughts and ideas, reflecting your thought process rather than direct outputs from AI [1].
+
+Additionally, it is encouraged to document any features you would add next if time permits [1].
+---
+Timestamp: 2026-07-22T12:32:39.269280+00:00
+Question: Summarize evey detail
+Answer: The provided documents outline an assignment to build a fullstack web application featuring a conversational AI assistant. Here are the details summarized:
+
+1. **Project Options**: 
+   - **Option 1**: Chat With Your Docs - A system that answers questions based on a document collection (PDFs, text files, etc.).
+   - **Option 2**: Code Documentation Assistant - A system that analyzes a codebase and answers questions about its functionality, API endpoints, and dependencies.
+   - **Option 3**: Meeting Intelligence System - A system that analyzes meeting transcripts to extract discussions, decisions, and action items. Transcripts should include speaker labels and timestamps, with an optional feature for voice-to-transcript capability.
+   - **Option 4**: Career Intelligence Assistant - A system that evaluates resumes against job descriptions, providing insights on skill gaps and experience alignment.
+
+2. **Submission Requirements**:
+   - A GitHub repository containing the code.
+   - A README.md file with:
+     - Quick setup instructions.
+     - Documentation of thought processes, including any edge cases acknowledged.
+     - Insights on the tech stack chosen and reasoning behind it.
+
+3. **Development Guidelines**:
+   - Start with a basic working version rather than a complex, non-functional one.
+   - The focus should be on engineering quality rather than handling every edge case.
+   - The README should reflect personal thought processes rather than relying solely on AI outputs.
+   - If time is limited, document potential future enhancements.
+
+4. **Evaluation Criteria**:
+   - **Core Functionality**: The application must effectively answer questions based on provided documents.
+   - **Creativity**: Emphasis on UI/UX design and product innovation.
+   - **Technical Approach**: Considerations for chunking, embedding models, retrieval methods, prompt engineering, and quality controls.
+   - **Engineering Excellence**: Code should be clean, readable, and well-structured, ideally containerized and observable.
+   - **AI-Assisted Development**: Use of AI coding tools is encouraged, with an emphasis on how these tools are integrated into the development process.
+
+Overall, the assignment emphasizes the importance of a well-engineered, functional application while allowing for creativity and personal input in the development process.
+---
+Timestamp: 2026-07-22T12:33:25.024066+00:00
+Question: How much is important to submit the readme file
+Answer: Submitting the README file is very important as it reflects your thought process and engineering philosophy. It should include key elements such as setup instructions, architecture overview, decisions made during development, and what you would do differently with more time. The README is a way to communicate your ideas and reasoning behind your choices, which is valued more than just the final product itself [1].
+---
+Timestamp: 2026-07-22T12:34:26.124294+00:00
+Question: What are the details of the vibe coding ex?
+Answer: The VIBE Coding Exercise involves building a small agentic web app within a 2–3 hour timebox. The key details include:
+
+- **Objective**: Create a web app where an agent accepts user goals in natural language, generates a lightweight plan, and executes tasks on both the server-side and client-side.
+- **Requirements**:
+  - Build and connect client and server web code.
+  - Design an agent that can plan and take actions, not just engage in chat.
+  - Incorporate knowledge in a visible and useful manner.
+  - Demonstrate successful execution of real web interactions.
+- **Domain**: You can choose any domain for the application, but it should remain small and end-to-end.
+- **Submission**: You need to provide a GitHub repository with your code and a README.md file that includes quick setup instructions and other documentation [1]. 
+
+Additionally, the exercise encourages the use of AI coding tools and emphasizes the importance of engineering excellence, creativity in UI/UX design, and a clear thought process in your approach to development [2].
+---
+Timestamp: 2026-07-22T12:35:23.501803+00:00
+Question: Can you list then the two objectives
+Answer: The two objectives from the provided context are:
+
+1. Build a small web app where an agent accepts a user goal in natural language, produces a lightweight plan, and completes the task by taking actions on both the server-side and client-side [1].
+2. Demonstrate the ability to build and connect client + server web code, design an agent that plans and takes actions, incorporate knowledge in a visible way, and prove successful execution of real web interactions [1].
+---
+Timestamp: 2026-07-22T12:35:49.001153+00:00
+Question: What are topic of the homeworks for the vibe coding and for the assignment
+Answer: The homework for the VIBE coding exercise involves building a small agentic web app within a 2–3 hour timebox. The app should accept a user goal in natural language, produce a lightweight plan, and complete the task by taking actions on both the server-side and client-side. The exercise emphasizes the use of natural-language tooling, agentic coding workflows, and pragmatic engineering judgment to deliver a working solution quickly. The submission should demonstrate the ability to connect client and server web code, design an agent that plans and takes actions, incorporate knowledge visibly, and execute real web interactions [1].
+
+Additionally, there are options for specific projects, such as a Career Intelligence Assistant that analyzes resumes against job descriptions, allowing users to upload a resume and multiple job postings to answer questions about fit and skill gaps [2]. 
+
+Overall, the focus is on demonstrating engineering philosophy, creativity in UI/UX design, and the use of AI coding tools to ensure maintainable and repeatable code [2].
+---
+Timestamp: 2026-07-22T12:46:03.331849+00:00
+Question: What are topic of the homeworks for the vibe coding and for the assignment
+Answer: The homework topics for the VIBE coding exercise involve building a small agentic web app within a 2–3 hour timebox. The app should accept user goals in natural language, produce a lightweight plan, and complete tasks by taking actions on both the server-side and client-side. The exercise emphasizes the use of natural-language tooling, agentic coding workflows, and pragmatic engineering judgment to deliver a working solution quickly. The submission should demonstrate the ability to build and connect client and server web code, design an agent that plans and takes actions, incorporate knowledge visibly, and prove successful execution of real web interactions [1].
+
+Additionally, there are options for specific projects, such as a Career Intelligence Assistant that analyzes resumes against job descriptions, allowing users to upload resumes and job postings to answer questions about fit and skill gaps [2]. 
+
+Overall, the focus is on demonstrating engineering philosophy, creativity in UI/UX design, and the use of AI coding tools to ensure maintainable and repeatable code [2].
+---
+Timestamp: 2026-07-22T12:46:30.270917+00:00
+Question: What are the topics of the homeworks
+Answer: The topics of the homeworks include:
+
+1. **Chat With Your Docs**: Building a system that answers questions about content from a document collection (PDFs, text files, etc.) [1].
+2. **Code Documentation Assistant**: Creating a system that ingests a codebase and answers questions about the code, such as functionality, API endpoints, and dependencies [1].
+3. **Meeting Intelligence System**: Developing a system that analyzes meeting transcripts to answer questions about discussions, decisions, and action items [1].
+4. **Career Intelligence Assistant**: Building a system that analyzes resumes against job descriptions, providing insights on fit, skill gaps, and experience alignment [1].
+
+These options allow for a variety of approaches and technologies to be used in the development process.
+---
+Timestamp: 2026-07-22T12:46:58.251896+00:00
+Question: What is the topics of the homeworks and the topic of the vipe coding ex
+Answer: The topics of the VIBE coding exercise involve building a small agentic web app within a 2–3 hour timebox. The exercise expects participants to demonstrate the ability to connect client and server web code, design an agent that can plan and take actions, incorporate knowledge visibly, and execute real web interactions. The goal is to create a web app where an agent accepts a user goal in natural language, produces a lightweight plan, and completes the task through both server-side and client-side actions, while keeping the project small but end-to-end [1].
+
+The homework topics include using AI coding tools, focusing on how these tools are utilized to ensure code quality, maintainability, and repeatability. Participants are encouraged to reflect on their approaches, trade-offs, and best practices within realistic time constraints [2].
+---
+Timestamp: 2026-07-22T12:47:18.171739+00:00
+Question: What is the options of the homeworks and the topic of the vipe coding ex
+Answer: The VIBE Coding Exercise involves building a small web app within a 2–3 hour timebox. The app should feature an agent that accepts user goals in natural language, produces a lightweight plan, and completes tasks through actions on both the server-side and client-side. You can choose any domain for your project, but it should be kept small yet end-to-end [1].
+
+There are several options for the homework, including:
+
+1. **Voice-to-Transcript Capability**: Build a system that transcribes audio to text with speaker labels and timestamps, with an optional bonus of adding voice-to-transcript capability.
+2. **Career Intelligence Assistant**: Create a system that analyzes resumes against job descriptions, allowing users to upload a resume and multiple job postings, and answer questions about fit, skill gaps, and experience alignment [2].
+
+You are encouraged to choose the option that excites you the most, as the focus is on how you build it as much as what you build [2].
+---
+Timestamp: 2026-07-22T13:09:32.502392+00:00
+Question: What is the remote work policy currently in the company?
+Answer: The current remote work policy at ACME Corp includes the following key points:
+
+1. **Core Working Hours**: All employees working remotely must be online and available during the core hours of 10:00 AM to 3:00 PM EST to ensure team alignment and facilitate scheduling for cross-functional meetings [1].
+
+2. **Equipment and Stipends**: ACME Corp provides a one-time remote setup stipend of $500 for home office furniture, and hardware updates occur every three years. Employees must request hardware replacements through the IT portal using the designated code [1].
+
+3. **Security Requirements**: Employees must connect to company databases via the secure Corporate Gatekeeper VPN, and password changes are required every 90 days. Sharing authentication tokens over chat applications is strictly prohibited [1]. 
+
+This summarizes the essential aspects of the remote work policy as outlined in the provided documents.
+---
+Timestamp: 2026-07-22T13:10:24.455410+00:00
+Question: How to contact the help desk in the company?
+Answer: To contact the help desk at ACME Corp, you can call extension 4400 for immediate critical issues. For non-urgent ticket submissions regarding stipends or software licenses, you can email support@acmecorp-it.com [1].
+---
+Timestamp: 2026-07-22T13:11:26.544106+00:00
+Question: What is the current remote working policy in the company?
+Answer: The current remote working policy at ACME Corp requires all employees working remotely to be online and available during core hours of 10:00 AM to 3:00 PM EST to ensure team alignment and facilitate scheduling for cross-functional meetings [1]. Additionally, employees are provided with a one-time remote setup stipend of $500 for home office furniture, and hardware updates occur every three years [1]. Security requirements include connecting to company databases via the secure Corporate Gatekeeper VPN and changing passwords every 90 days [1].
+---
+Timestamp: 2026-07-22T13:11:59.708737+00:00
+Question: How we can contact the help desk in the company?
+Answer: You can contact the help desk at ACME Corp by calling extension 4400 for immediate critical issues. For non-urgent ticket submissions regarding stipends or software licenses, you can email support@acmecorp-it.com [1].
+---
+Timestamp: 2026-07-22T13:16:58.112772+00:00
+Question: What is the remote policy in the company right now?
+Answer: The current remote policy at ACME Corp includes the following key points:
+
+1. **Core Working Hours**: Employees working remotely must be online and available during the core hours of 10:00 AM to 3:00 PM EST to ensure team alignment and facilitate scheduling for cross-functional meetings [1].
+
+2. **Equipment and Stipends**: ACME Corp provides a one-time remote setup stipend of $500 for home office furniture, and hardware updates occur every three years. Employees must request hardware replacements through the IT portal using the designated code [1].
+
+3. **Security Requirements**: Employees must connect to company databases via the secure Corporate Gatekeeper VPN, and they are required to change their passwords every 90 days. Sharing authentication tokens over chat applications is strictly prohibited [1]. 
+
+This summarizes the current remote work policy as outlined in the provided documents.
+---
+Timestamp: 2026-07-22T13:17:23.703380+00:00
+Question: How to contact the helpdesk?
+Answer: To contact the helpdesk at ACME Corp, you can call extension 4400 for immediate critical issues. For non-urgent ticket submissions regarding stipends or software licenses, you can email support@acmecorp-it.com [1].
+---

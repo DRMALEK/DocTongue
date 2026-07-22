@@ -28,6 +28,7 @@ from app.services.vector_store import SearchResult, VectorStore
 
 logger = logging.getLogger(__name__)
 CITATION_MARKER_RE = re.compile(r"\[(\d+)\]")
+ANSWER_LINE_RE = re.compile(r".*?(?:\n|$)", re.DOTALL)
 AUDIT_LOG_LOCK = Lock()
 
 
@@ -75,6 +76,7 @@ def answer_question(
                 )
                 grounded = False
 
+            answer = _reconcile_markers_with_local_evidence(answer=answer, top_hits=top_hits)
             answer, cited_hits = _bind_answer_to_citations(
                 answer=answer,
                 top_hits=top_hits,
@@ -200,6 +202,66 @@ def _bind_answer_to_citations(
     normalized_answer = re.sub(r"(\[\d+\])(?:\s*\1)+", r"\1", normalized_answer)
 
     return normalized_answer, selected_hits
+
+
+def _reconcile_markers_with_local_evidence(
+    answer: str,
+    top_hits: list[SearchResult],
+) -> str:
+    """Correct single-marker lines when another retrieved hit is clearly better support.
+
+    This helps with cases where the model chooses the wrong source number in a
+    bullet line like ``- ... [1]`` despite stronger support from another retrieved
+    source. Multi-marker lines are left unchanged.
+    """
+    if not answer or not top_hits:
+        return answer
+
+    def score_support(claim_text: str, hit: SearchResult) -> float:
+        # Prioritize lexical evidence in the claim, with retrieval score as a tiebreaker.
+        return (0.85 * lexical_overlap_score(claim_text, hit.content)) + (0.15 * hit.score)
+
+    output: list[str] = []
+    for line_match in ANSWER_LINE_RE.finditer(answer):
+        line = line_match.group(0)
+        if not line:
+            continue
+
+        markers = [int(match.group(1)) for match in CITATION_MARKER_RE.finditer(line)]
+        unique_markers = {marker for marker in markers}
+        if len(unique_markers) != 1:
+            output.append(line)
+            continue
+
+        current_marker = next(iter(unique_markers))
+        current_index = current_marker - 1
+        if current_index < 0 or current_index >= len(top_hits):
+            output.append(line)
+            continue
+
+        claim_text = CITATION_MARKER_RE.sub("", line).strip(" \t-•:\n")
+        if len(claim_text) < 20:
+            output.append(line)
+            continue
+
+        best_index = current_index
+        current_score = score_support(claim_text, top_hits[current_index])
+        best_score = current_score
+        for index, hit in enumerate(top_hits):
+            candidate_score = score_support(claim_text, hit)
+            if candidate_score > best_score:
+                best_score = candidate_score
+                best_index = index
+
+        # Require a margin to avoid noisy remaps.
+        if best_index == current_index or (best_score - current_score) < 0.08:
+            output.append(line)
+            continue
+
+        remapped_line = CITATION_MARKER_RE.sub(f"[{best_index + 1}]", line)
+        output.append(remapped_line)
+
+    return "".join(output)
 
 
 def _first_unique_documents(hits: list[SearchResult], max_citations: int) -> list[SearchResult]:

@@ -9,17 +9,22 @@ export function SourceCitations({ citations }: SourceCitationsProps) {
     return null;
   }
 
-  const sourceFilenames = Array.from(
-    new Set(citations.map((citation) => citation.filename)),
-  );
+  const sourceCitations = Array.from(
+    citations.reduce<Map<string, Citation>>((sourcesByDocumentId, citation) => {
+      if (!sourcesByDocumentId.has(citation.document_id)) {
+        sourcesByDocumentId.set(citation.document_id, citation);
+      }
+      return sourcesByDocumentId;
+    }, new Map()),
+  ).map(([, citation]) => citation);
 
   return (
     <div className="mt-3 rounded-lg border border-[var(--dt-border-inner)] bg-[var(--dt-bg-surface)] p-3">
       <ol className="space-y-1.5 text-sm leading-6 text-[var(--dt-text-tertiary)]">
-        {sourceFilenames.map((filename, index) => (
-          <li key={filename}>
+        {sourceCitations.map((citation, index) => (
+          <li key={citation.document_id}>
             <span className="font-semibold text-[var(--dt-text-muted)]">[{index + 1}]</span>{" "}
-            <span>{filename}</span>
+            <span>{citation.filename}</span>
           </li>
         ))}
       </ol>

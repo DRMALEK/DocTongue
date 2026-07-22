@@ -54,5 +54,7 @@ def chat(
             chat_memory_store=chat_memory_store,
             quality_evaluator=quality_evaluator,
         )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     except Exception as exc:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to answer question.") from exc

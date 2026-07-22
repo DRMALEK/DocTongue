@@ -63,18 +63,24 @@ class EmbeddingService:
                 provider=self._settings.embedding_provider,
                 model=self._settings.embedding_model,
             )
+            request_kwargs = _build_litellm_kwargs(
+                api_base=self._settings.embedding_api_base,
+                api_key=_resolve_api_key(
+                    self._settings.embedding_provider,
+                    self._settings.embedding_api_key,
+                    self._settings,
+                ),
+                timeout=self._settings.llm_timeout_seconds,
+            )
+            if _supports_embedding_dimensions(
+                provider=self._settings.embedding_provider,
+                model=model,
+            ):
+                request_kwargs["dimensions"] = self._settings.embedding_dimensions
             response = embedding(
                 model=model,
                 input=texts,
-                **_build_litellm_kwargs(
-                    api_base=self._settings.embedding_api_base,
-                    api_key=_resolve_api_key(
-                        self._settings.embedding_provider,
-                        self._settings.embedding_api_key,
-                        self._settings,
-                    ),
-                    timeout=self._settings.llm_timeout_seconds,
-                ),
+                **request_kwargs,
             )
             return [item["embedding"] for item in response.data]
         if self._settings.embedding_provider != "local":
@@ -238,14 +244,24 @@ def _build_litellm_kwargs(
     api_base: str | None,
     api_key: str | None,
     timeout: float,
-) -> dict[str, str | float]:
+) -> dict[str, str | float | int]:
     """Build optional keyword arguments for a LiteLLM ``completion``/``embedding`` call."""
-    kwargs: dict[str, str | float] = {"timeout": timeout}
+    kwargs: dict[str, str | float | int] = {"timeout": timeout}
     if api_base:
         kwargs["api_base"] = api_base
     if api_key:
         kwargs["api_key"] = api_key
     return kwargs
+
+
+def _supports_embedding_dimensions(provider: str, model: str) -> bool:
+    """Return ``True`` when provider/model pair supports a ``dimensions`` override."""
+    if provider not in {"openai", "azure"}:
+        return False
+    normalized = model.lower()
+    if "/" in normalized:
+        normalized = normalized.split("/", maxsplit=1)[1]
+    return normalized.startswith("text-embedding-3")
 
 
 def _uses_litellm_provider(provider: str) -> bool:

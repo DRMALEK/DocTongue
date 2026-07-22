@@ -441,3 +441,81 @@ def test_answer_question_includes_quality_control_when_evaluator_provided() -> N
     assert response.quality_control.passed is True
     assert response.quality_control.method == "deepeval.answer_relevancy"
     assert response.quality_control.reason == "Answer is relevant to the question."
+
+
+def test_answer_question_remaps_single_marker_line_to_better_supported_source() -> None:
+    settings = Settings(max_answer_citations=3)
+    memory_store = StubMemoryStore()
+    vector_store = StubVectorStore(
+        [
+            SearchResult(
+                document_id="doc-1",
+                filename="resource-1.txt",
+                content="The exercise asks for submission via an LMS portal with no repository requirement.",
+                page_number=1,
+                score=0.93,
+            ),
+            SearchResult(
+                document_id="doc-2",
+                filename="resource-2.txt",
+                content="Submission requires a GitHub repository and a README.md with quick setup instructions.",
+                page_number=3,
+                score=0.88,
+            ),
+        ]
+    )
+
+    response = answer_question(
+        question="How should I submit the VIBE exercise?",
+        session_id="test-session",
+        settings=settings,
+        vector_store=vector_store,
+        answer_generator=MarkerAnswerGenerator(
+            "Submission requires a GitHub repository with README quick setup instructions. [1]"
+        ),
+        chat_memory_store=memory_store,
+    )
+
+    assert response.grounded is True
+    assert response.answer.endswith("[1]")
+    assert len(response.citations) == 1
+    assert response.citations[0].document_id == "doc-2"
+    assert response.citations[0].filename == "resource-2.txt"
+
+
+def test_answer_question_keeps_multi_marker_line_unchanged() -> None:
+    settings = Settings(max_answer_citations=3)
+    memory_store = StubMemoryStore()
+    vector_store = StubVectorStore(
+        [
+            SearchResult(
+                document_id="doc-1",
+                filename="resource-1.txt",
+                content="Requirement A details.",
+                page_number=1,
+                score=0.93,
+            ),
+            SearchResult(
+                document_id="doc-2",
+                filename="resource-2.txt",
+                content="Requirement B details.",
+                page_number=2,
+                score=0.91,
+            ),
+        ]
+    )
+
+    response = answer_question(
+        question="List the requirements.",
+        session_id="test-session",
+        settings=settings,
+        vector_store=vector_store,
+        answer_generator=MarkerAnswerGenerator(
+            "The requirements include A [1] and B [2]."
+        ),
+        chat_memory_store=memory_store,
+    )
+
+    assert response.grounded is True
+    assert "[1] and B [2]" in response.answer
+    assert len(response.citations) == 2

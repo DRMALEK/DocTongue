@@ -62,12 +62,17 @@ class VectorStore:
             }
             for chunk in chunks
         ]
-        self._collection.upsert(
-            ids=ids,
-            documents=documents,
-            embeddings=embeddings,
-            metadatas=metadatas,
-        )
+        try:
+            self._collection.upsert(
+                ids=ids,
+                documents=documents,
+                embeddings=embeddings,
+                metadatas=metadatas,
+            )
+        except Exception as exc:
+            if _is_embedding_space_mismatch_error(exc):
+                raise RuntimeError(_embedding_space_mismatch_message()) from exc
+            raise
 
     def delete_document(self, document_id: str) -> None:
         """Remove all chunks belonging to *document_id* from the collection."""
@@ -82,7 +87,12 @@ class VectorStore:
         if self._collection.count() == 0:
             return []
         query_embedding = self._embedding_service.embed_texts([question])[0]
-        response = self._collection.query(query_embeddings=[query_embedding], n_results=limit)
+        try:
+            response = self._collection.query(query_embeddings=[query_embedding], n_results=limit)
+        except Exception as exc:
+            if _is_embedding_space_mismatch_error(exc):
+                raise RuntimeError(_embedding_space_mismatch_message()) from exc
+            raise
         documents = response.get("documents", [[]])[0]
         metadatas = response.get("metadatas", [[]])[0]
         distances = response.get("distances", [[]])[0]
@@ -100,3 +110,25 @@ class VectorStore:
                 )
             )
         return hits
+
+
+def _is_embedding_space_mismatch_error(exc: Exception) -> bool:
+    """Best-effort detection for vector DB errors caused by embedding space changes."""
+    error_name = type(exc).__name__.lower()
+    message = str(exc).lower()
+    if "invaliddimension" in error_name:
+        return True
+    if "dimension" in message and ("mismatch" in message or "invalid" in message):
+        return True
+    if "embedding" in message and "dimension" in message:
+        return True
+    return False
+
+
+def _embedding_space_mismatch_message() -> str:
+    """Return a user-facing remediation message for stale/mismatched indexes."""
+    return (
+        "Embedding configuration changed and the persisted Chroma index is incompatible. "
+        "Delete backend/data/chroma and backend/data/documents.json, restart the backend, "
+        "then re-upload documents to rebuild the index."
+    )

@@ -1,8 +1,15 @@
 # DocTongue
 
+![DocTongue intro image](intro.png)
+
 DocTongue is a simple full-stack document Q&A application. Users upload PDFs into a shared collection, ask questions in a chat-style interface, and receive answers grounded only in retrieved document content with visible supporting evidence.
 
-![DocTongue app screenshot](Screenshot%202026-07-21%20175709.png)
+## Example
+
+
+<video controls src="simplescreenrecorder-2026-07-22_15.16.26.mp4"></video>
+
+If your Markdown viewer does not support embedded video, open the recording directly: [Demo video](simplescreenrecorder-2026-07-22_15.16.26.mp4)
 
 ## Features
 
@@ -52,8 +59,9 @@ For local development in a dev container, leave `NEXT_PUBLIC_API_BASE_URL` empty
 
 - `LLM_PROVIDER=stub` keeps local development simple and does not require API keys.
 - `EMBEDDING_PROVIDER=local` uses a local hashed embedding strategy for retrieval.
-- To use a real model provider, set `LLM_PROVIDER` and `EMBEDDING_PROVIDER` to `litellm`, choose model names, and export the matching provider keys.
+- To use a real model provider, set `LLM_PROVIDER` and `EMBEDDING_PROVIDER` to `litellm` or a supported alias (`openai`, `anthropic`, `gemini`, `openrouter`, `azure`), choose model names, and export the matching provider keys.
 - `LLM_API_BASE`, `LLM_API_KEY`, `EMBEDDING_API_BASE`, and `EMBEDDING_API_KEY` are optional overrides for OpenAI-compatible or proxy endpoints.
+- If you switch embedding provider/model (for example from `local` to `openai`), clear persisted vector data and rebuild: remove `backend/data/chroma` and `backend/data/documents.json`, restart backend, and re-upload documents.
 - `LLM_TIMEOUT_SECONDS` controls both live embedding and completion request timeouts.
 - `QUALITY_CONTROL_ENABLED` toggles response quality evaluation for grounded answers.
 - `QUALITY_CONTROL_THRESHOLD` defines pass/fail score cutoff for quality checks (0.0-1.0).
