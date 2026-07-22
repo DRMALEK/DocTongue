@@ -92,6 +92,44 @@ QUALITY_CONTROL_THRESHOLD=0.5
 
 If using an external judge model, provide provider credentials in `.env` (for example `OPENAI_API_KEY`) so deepeval can call the judge model.
 
+## Docker setup (recommended)
+
+The repository includes Dockerfiles for both apps and a root `docker-compose.yml` that starts:
+
+- `frontend` on `http://localhost:3000`
+- `backend` on `http://localhost:8000`
+- `redis` on an internal network for chat memory
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+Run in detached mode:
+
+```bash
+docker compose up --build -d
+```
+
+Stop services:
+
+```bash
+docker compose down
+```
+
+Stop services and remove Redis volume data:
+
+```bash
+docker compose down -v
+```
+
+Notes:
+
+- Backend document/chroma/audit storage is persisted from `./backend/data` to `/app/data` in the backend container.
+- `frontend` uses `BACKEND_API_BASE_URL=http://backend:8000` inside Compose so `/api/*` requests resolve to the backend service.
+- Provider credentials such as `OPENAI_API_KEY`, `LLM_API_KEY`, and `EMBEDDING_API_KEY` can be exported in your shell (or set in a local `.env`) before running Compose.
+
 ## Local setup
 
 ### 1. Frontend
