@@ -6,7 +6,6 @@ DocTongue is a simple full-stack document Q&A application. Users upload PDFs int
 
 ## Features
 
-- The system accepts PDF uploads up to 50 MB per file.
 - The system indexes uploaded PDFs and makes them searchable across the shared document collection.
 - The system provides chat-based question answering grounded in indexed document evidence.
 - The system returns citation references for factual answers, showing source filenames.
@@ -15,7 +14,8 @@ DocTongue is a simple full-stack document Q&A application. Users upload PDFs int
 - The system rejects prompt-injection attempts that request hidden instructions or policy bypass.
 - The system rejects explicit sexual or nudity-related requests.
 - The system allows users to view indexed documents and delete documents from the collection.
-- The system exposes automated tests for key backend API and retrieval behavior.
+- The system provides an optional response quality control with deepeval (LLM-as-judge) and a safe lexical fallback
+
 
 ## Stack
 
