@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520" role="img" aria-labelledby="title desc">
+  <title id="title">DocTongue Architecture</title>
+  <desc id="desc">High-level architecture showing user, frontend, backend, ingestion, retrieval, vector store, LLM, chat memory, and audit log.</desc>
+
+  <defs>
+    <style>
+      .bg { fill: #0f172a; }
+      .card { fill: #1e293b; stroke: #475569; stroke-width: 2; rx: 12; }
+      .store { fill: #1d4ed8; stroke: #93c5fd; stroke-width: 2; rx: 12; }
+      .text { fill: #e2e8f0; font-family: Inter, Arial, sans-serif; font-size: 16px; }
+      .small { fill: #cbd5e1; font-family: Inter, Arial, sans-serif; font-size: 13px; }
+      .arrow { stroke: #94a3b8; stroke-width: 2.4; fill: none; marker-end: url(#arrowhead); }
+      .label { fill: #94a3b8; font-family: Inter, Arial, sans-serif; font-size: 12px; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1100" height="520" />
+
+  <rect class="card" x="40" y="215" width="150" height="80" />
+  <text class="text" x="115" y="260" text-anchor="middle">User</text>
+
+  <rect class="card" x="250" y="160" width="220" height="190" />
+  <text class="text" x="360" y="205" text-anchor="middle">Frontend</text>
+  <text class="small" x="360" y="230" text-anchor="middle">Next.js + React</text>
+  <text class="small" x="360" y="250" text-anchor="middle">Upload / Chat UI</text>
+
+  <rect class="card" x="520" y="120" width="250" height="270" />
+  <text class="text" x="645" y="165" text-anchor="middle">Backend API</text>
+  <text class="small" x="645" y="190" text-anchor="middle">FastAPI</text>
+  <text class="small" x="645" y="210" text-anchor="middle">Ingestion + Retrieval + QA</text>
+
+  <rect class="store" x="840" y="60" width="220" height="90" />
+  <text class="text" x="950" y="105" text-anchor="middle">LLM Provider</text>
+  <text class="small" x="950" y="127" text-anchor="middle">via LiteLLM</text>
+
+  <rect class="store" x="840" y="180" width="220" height="90" />
+  <text class="text" x="950" y="225" text-anchor="middle">Chroma Vector DB</text>
+  <text class="small" x="950" y="247" text-anchor="middle">Embeddings + Search</text>
+
+  <rect class="store" x="840" y="300" width="220" height="90" />
+  <text class="text" x="950" y="345" text-anchor="middle">Memory + Audit</text>
+  <text class="small" x="950" y="367" text-anchor="middle">Redis/Fallback + Logs</text>
+
+  <rect class="card" x="250" y="390" width="220" height="90" />
+  <text class="text" x="360" y="435" text-anchor="middle">Storage</text>
+  <text class="small" x="360" y="457" text-anchor="middle">PDF uploads + metadata</text>
+
+  <path class="arrow" d="M190 255 L250 255" />
+  <path class="arrow" d="M470 255 L520 255" />
+  <path class="arrow" d="M520 285 L470 285" />
+
+  <path class="arrow" d="M770 160 L840 105" />
+  <text class="label" x="792" y="130">generation</text>
+
+  <path class="arrow" d="M770 225 L840 225" />
+  <text class="label" x="788" y="215">retrieve</text>
+
+  <path class="arrow" d="M770 290 L840 345" />
+  <text class="label" x="790" y="320">session + audit</text>
+
+  <path class="arrow" d="M520 360 L470 430" />
+  <path class="arrow" d="M470 430 L520 330" />
+  <text class="label" x="490" y="395">ingest/index</text>
+</svg>

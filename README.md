@@ -1,262 +1,181 @@
 # DocTongue
 
-![DocTongue intro image](dashboard.png)
+![DocTongue intro image](assets/dashboard.png)
 
-DocTongue is a simple full-stack document Q&A application. Users upload PDFs into a shared collection, ask questions in a chat-style interface, and receive answers grounded only in retrieved document content with visible supporting evidence.
+## 1) Project Description
 
-## Example
+DocTongue is a full-stack Retrieval-Augmented Generation (RAG) application for document question answering.
 
+- Users upload PDF files.
+- The system indexes document chunks into a vector store.
+- Users ask questions in chat.
+- The assistant answers with grounded citations from uploaded documents.
 
-<video controls src="simplescreenrecorder-2026-07-22_15.30.13.mp4"></video>
+## 2) Setup (Containerization + ENV)
 
-If your Markdown viewer does not support embedded video, open the recording directly: [Demo video](simplescreenrecorder-2026-07-22_15.16.26.mp4)
+### Prerequisites
 
-## Features
+- Docker Engine (with Docker Compose plugin).
+- Ports `3000` and `8000` available on your machine.
 
-- The system indexes uploaded PDFs and makes them searchable across the shared document collection.
-- The system provides chat-based question answering grounded in indexed document evidence.
-- The system returns citation references for factual answers, showing source filenames.
-- The system maintains short multi-turn conversation context per chat session.
-- The system records each completed chat exchange (timestamp, user question, assistant answer) in an audit log.
-- The system rejects prompt-injection attempts that request hidden instructions or policy bypass.
-- The system rejects explicit sexual or nudity-related requests.
-- The system allows users to view indexed documents and delete documents from the collection.
-- The system provides an optional response quality control with deepeval (LLM-as-judge) and a safe lexical fallback
-- The UI shows an animated typing indicator while the assistant is generating a response.
-- The UI supports light and dark themes toggled via a button in the top navigation bar.
-- The UI displays a persistent user badge in the bottom-left corner.
+### Create ENV file
 
+Create [backend/.env](backend/.env) and add at least the following:
 
-## Stack
-
-- Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS v4
-- Backend: FastAPI, Python 3.12
-- Document parsing: PyPDF
-- Retrieval: local chunking, embeddings, ChromaDB vector search
-- Chat memory: Redis (in-memory) with automatic in-process fallback when Redis is unavailable
-- LLM integration: provider-agnostic answer generation through LiteLLM, with a local stub mode for zero-key local development
-- Optional response quality control with deepeval (LLM-as-judge) and a safe lexical fallback
-
-## Architecture
-
-The repository is split into two applications:
-
-- `frontend/`: the Next.js interface for document upload, collection management, and chat
-- `backend/`: the FastAPI service that handles ingestion, chunking, embeddings, Chroma persistence, retrieval, and answer generation
-
-
-## Repository structure
-
-See `project-structure.txt` for the concise file organization.
-
-## Environment variables
-
-Copy `.env.example` to `backend/.env` and adjust values as needed.
-
-For local development in a dev container, leave `NEXT_PUBLIC_API_BASE_URL` empty and use `BACKEND_API_BASE_URL=http://127.0.0.1:8000` so the Next.js dev server proxies browser requests to FastAPI.
-
-### Important defaults
-
-- `LLM_PROVIDER=stub` keeps local development simple and does not require API keys.
-- `EMBEDDING_PROVIDER=local` uses a local hashed embedding strategy for retrieval.
-- To use a real model provider, set `LLM_PROVIDER` and `EMBEDDING_PROVIDER` to `litellm` or a supported alias (`openai`, `anthropic`, `gemini`, `openrouter`, `azure`), choose model names, and export the matching provider keys.
-- `LLM_API_BASE`, `LLM_API_KEY`, `EMBEDDING_API_BASE`, and `EMBEDDING_API_KEY` are optional overrides for OpenAI-compatible or proxy endpoints.
-- If you switch embedding provider/model (for example from `local` to `openai`), clear persisted vector data and rebuild: remove `backend/data/chroma` and `backend/data/documents.json`, restart backend, and re-upload documents.
-- `LLM_TIMEOUT_SECONDS` controls both live embedding and completion request timeouts.
-- `QUALITY_CONTROL_ENABLED` toggles response quality evaluation for grounded answers.
-- `QUALITY_CONTROL_THRESHOLD` defines pass/fail score cutoff for quality checks (0.0-1.0).
-- `QUALITY_CONTROL_FAIL_OPEN` keeps chat responses flowing when judge evaluation fails and uses a local fallback score.
-- `QUALITY_CONTROL_INCLUDE_REASON` includes judge/fallback reason text in API responses.
-- `CHAT_MEMORY_WINDOW` controls how many recent chat turns are kept per chat session (default `3`).
-- `CHAT_MEMORY_TTL_SECONDS` sets optional expiration for each session memory key in Redis.
-- `REDIS_URL` and `REDIS_CHAT_KEY_PREFIX` configure where chat memory is stored.
-- `CHAT_AUDIT_LOG_PATH` optionally overrides the plain-text audit log file path.
-
-### Sliding Window Buffer with Query Reformulation
-
-Functional requirements:
-
-1. The system stores recent chat turns per `session_id` and uses that context to improve follow-up question handling.
-2. The system limits retained context to `CHAT_MEMORY_WINDOW` recent turns.
-3. The system continues to answer the current user question while using session context to improve retrieval relevance.
-4. The system appends each completed turn back into session memory.
-5. The system continues operating when Redis is unavailable by using a local fallback memory mechanism.
-6. The system writes chat audit entries to `backend/data/chat_audit.txt` by default, unless `CHAT_AUDIT_LOG_PATH` is provided.
-
-### Quality control (deepeval)
-
-Functional requirements:
-
-1. The system supports optional response quality evaluation when `QUALITY_CONTROL_ENABLED=1`.
-2. The system returns a `quality_control` object for evaluated responses containing `score`, `passed`, and `method` fields.
-3. The system computes `passed` using `QUALITY_CONTROL_THRESHOLD`.
-4. The system includes `reason` when `QUALITY_CONTROL_INCLUDE_REASON=1`.
-5. The system keeps chat responses available when judge evaluation fails if `QUALITY_CONTROL_FAIL_OPEN=1`.
-6. The system returns judge-based evaluation metadata when judge execution succeeds.
-
-Minimal enablement:
-
-```bash
-QUALITY_CONTROL_ENABLED=1
-QUALITY_CONTROL_THRESHOLD=0.5
+```env
+LLM_PROVIDER=stub
+EMBEDDING_PROVIDER=local
+LLM_MODEL=gpt-4o-mini
+EMBEDDING_MODEL=text-embedding-3-small
+QUALITY_CONTROL_ENABLED=0
+REDIS_URL=redis://localhost:6379/0
 ```
 
-If using an external judge model, provide provider credentials in `.env` (for example `OPENAI_API_KEY`) so deepeval can call the judge model.
+Notes:
 
-## Docker setup (recommended)
+- `stub` + `local` works without external API keys.
+- To use real providers, set provider values and corresponding keys (example: `OPENAI_API_KEY`).
 
-The repository includes Dockerfiles for both apps and a root `docker-compose.yml` that starts:
+### Start containers
 
-- `frontend` on `http://localhost:3000`
-- `backend` on `http://localhost:8000`
-
-By default, the backend uses its in-process chat memory fallback so the Compose stack does not require a separate Redis container.
-
-From the repository root:
+From the project root:
 
 ```bash
 docker compose up --build
 ```
 
-Run in detached mode:
+Run detached:
 
 ```bash
 docker compose up --build -d
 ```
 
-Stop services:
+Check status:
+
+```bash
+docker compose ps
+```
+
+Check logs:
+
+```bash
+docker compose logs -f
+```
+
+Stop:
 
 ```bash
 docker compose down
 ```
 
-Stop services and remove Redis volume data:
+### How to access the app
 
-```bash
-docker compose down -v
-```
+- Frontend UI: http://localhost:3000
+- Backend API docs (Swagger): http://localhost:8000/docs
+- Backend health endpoint: http://localhost:8000/health
 
-Notes:
+Usage flow:
 
-- Backend document/chroma/audit storage is persisted from `./backend/data` to `/app/data` in the backend container.
-- `frontend` uses `BACKEND_API_BASE_URL=http://backend:8000` inside Compose so `/api/*` requests resolve to the backend service.
-- The frontend rewrite target is compiled during image build. If you change `BACKEND_API_BASE_URL`, rebuild the frontend image (`docker compose up --build`).
-- Provider credentials such as `OPENAI_API_KEY`, `LLM_API_KEY`, and `EMBEDDING_API_KEY` can be exported in your shell (or set in a local `.env`) before running Compose.
-- If you want Redis-backed chat memory, run a Redis container separately and set `REDIS_URL` accordingly.
+1. Open the frontend URL.
+2. Upload one or more PDF files from the left panel.
+3. Wait for indexing to finish.
+4. Ask questions in the chat panel.
+5. Review returned citations with each answer.
 
-## Local setup
 
-### 1. Frontend
+## 3) Architecture
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
+High-level components:
 
-The frontend runs on `http://localhost:3000`.
-Its `/api/*` requests are proxied by Next.js to `BACKEND_API_BASE_URL`.
+- `frontend/`: Next.js UI for upload, document list, and chat.
+- `backend/`: FastAPI APIs for ingestion, retrieval, and answer generation.
+- `backend/data/chroma/`: local vector persistence.
+- `backend/data/uploads/`: uploaded PDFs.
 
-### 2. Backend
+Architecture diagram (SVG):
 
-```bash
-cd backend
-python3 -m pip install -e '.[dev]'
-uvicorn app.main:app --reload
-```
+![DocTongue architecture](docs/architecture.svg)
 
-The backend runs on `http://localhost:8000`.
+## 4) Moving to Production on Hyper-Scalers (AWS / GCP / Azure / Cloudflare)
 
-## API summary
+Key considerations before production rollout:
 
-### `GET /api/documents`
+- **Authentication and authorization**: Add `OIDC/OAuth2` login and role-based access control.
+- **Identity and secrets**: Use managed identity/IAM roles and secret stores (Azure Key Vault / AWS Secrets Manager) instead of static secrets in files.
+- **Storage hardening**: Move uploads and artifacts to object storage (Azure Blob / AWS S3) lifecycle policies, and backups.
+- **Vector database strategy**: Use a managed vector store or run Chroma with persistent volumes, backups, and DR procedures.
+- **Networking and security**: Use private networking, TLS.
+- **Observability**: Centralize logs, traces, metrics, dashboards, and on-call alerts.
+- **Scalability and reliability**: Add autoscaling for API/workers, queue-based ingestion for large files.
+- **Compliance and governance**: Define data retention, residency, recovery and backup.
 
-Returns the indexed document list.
 
-### `POST /api/documents`
+## 5) RAG/LLM Approach and Decisions
 
-Accepts a multipart file upload and indexes one document.
+| Area | Choices considered | Final choice and why |
+|---|---|---|
+| LLM provider | Direct SDK integration per provider vs model-agnostic adapter. | **LiteLLM abstraction** for portability; provider/model can change through ENV with minimal code changes. |
+| Embedding model | Local deterministic embedding vs hosted embedding APIs. | **Configurable embeddings**, currently `text-embedding-3-small`; local hash embedding remains available for no-key local development. |
+| Vector database | In-memory index, self-hosted vector DB, or managed vector DB. | **Chroma (local persistent)** for simple setup and fast iteration in this project scope. |
+| Orchestration framework | Full agent framework vs direct service orchestration in backend code. | **Direct orchestration in FastAPI services** for lower complexity and easier debugging in a small codebase. |
+| Chunking strategy | Semantic chunking vs fixed-size chunking with overlap. | **Fixed-size + overlap** chosen for simplicity, predictable behavior, and straightforward tuning. |
+| Retrieval strategy | Dense-only retrieval vs hybrid retrieval and reranking. | **Vector top-k + lightweight grounding filters** implemented now for a simple and stable baseline. |
+| Prompt & context management | Stateless prompt only vs session-aware reformulation and memory. | **Grounded system prompt + sliding window memory** to keep answers citation-based while improving follow-up query resolution. |
+| Guardrails | No input filter vs explicit pre-check policy layer. | **Input guardrails enabled** for prompt-injection patterns and explicit sexual content at the `/api/chat` boundary. |
+| Quality control | No judge, heuristic-only, or LLM-as-judge with fallback. | **Optional `deepeval` judge** with deterministic lexical fallback for reliability when external judge execution fails. |
+| Observability | Console-only logs vs structured logs + audit artifacts. | **Application logging + chat audit file** for runtime diagnostics and future auditing workflows. |
 
-Constraints:
+## 6) Technical Decisions Taken
 
-- Only PDF files are supported.
-- Maximum upload size is 50 MB.
+Current simple decisions:
 
-### `DELETE /api/documents/{document_id}`
+- Next.js + FastAPI split for clear frontend/backend boundaries and independent scaling.
+- Chroma local persistence for quick local development and zero-extra infrastructure.
+- LiteLLM abstraction to keep model providers swappable without coupling business logic to one SDK.
+- Guardrails + optional quality control path to improve safety and answer reliability.
 
-Deletes a document from local storage and the vector store.
+If more time is available:
 
-### `POST /api/chat`
+- Async ingestion pipeline with queue/worker model.
+- Better retrieval evaluation dataset and automated scoring.
+- Hybrid retrieval (dense + lexical) and reranking.
+- Production-grade observability and SLO definitions.
 
-Accepts a JSON body like:
+Engineering standards document:
 
-```json
-{
-	"question": "Where are uploaded documents stored?",
-	"session_id": "demo-user-1"
-}
-```
+- [ENGINEERING_STANDARDS.md](ENGINEERING_STANDARDS.md)
 
-Returns a grounded answer and citation list with filenames only.
+## 7) How Coding Agent (GitHub Copilot) Was Used
 
-When quality control is enabled, the response also includes:
+GitHub Copilot was used as a coding assistant for:
 
-```json
-"quality_control": {
-	"score": 0.84,
-	"passed": true,
-	"method": "deepeval.answer_relevancy",
-	"reason": "The answer directly addresses the user question."
-}
-```
+- scaffolding and refactoring support,
+- faster iteration on UI and backend integration,
+- generating baseline tests and improving developer throughput.
 
-`session_id` is optional and defaults to `default`. Provide a stable `session_id` per user/client to enable multi-turn memory.
+All generated output was reviewed and adjusted manually before acceptance.
 
-Guardrails:
+## 8) What We'd Do Differently With More Time
 
-- Requests that attempt to override hidden/system instructions are rejected.
-- Requests for explicit sexual/nudity content are rejected.
+- Implement user authentication / authoriztaion.
+- OCR pipeline for scanned PDFs.
+- Better citation UX (page-level and highlighted spans).
+- Cloud-native deployment templates (Azure/AWS).
 
-### Optional: run Redis locally
+## 9) Screenshots and Example Video
 
-```bash
-docker run --name doctongue-redis -p 6379:6379 -d redis:7-alpine
-```
+Screenshot(s):
 
-## Testing
+- Main dashboard: ![DocTongue dashboard](assets/dashboard.png)
 
-### Backend
+<video controls src="assets/simplescreenrecorder-2026-07-22_15.30.13.mp4"></video>
 
-```bash
-cd backend
-pytest -q
-```
+If embedded playback is unsupported, open: [Demo video](assets/simplescreenrecorder-2026-07-22_15.30.13.mp4)
 
-### Live LiteLLM smoke test
+## 10) Licence
 
-This smoke test is skipped by default. It is only intended for an explicit real-provider check.
+No licence file is defined yet in this repository.
 
-```bash
-cd backend
-RUN_LIVE_LLM_SMOKE_TEST=1 \
-LLM_PROVIDER=litellm \
-EMBEDDING_PROVIDER=litellm \
-pytest -q -k live_litellm_smoke
-```
+---
 
-Provide matching model names and credentials through `.env` or exported environment variables before running it.
-
-### Frontend
-
-```bash
-cd frontend
-npm test
-npm run lint
-npm run build
-```
-
-## Notes
-
-- Uploaded files and Chroma data are stored under `backend/data/` and ignored by Git.
-- The current app uses one shared collection in v1.
-- Scanned PDFs without extractable text are not OCR-processed in this version.
+Project note: The rationale in this document reflects implementation-specific engineering choices made in this repository, reviewed and edited by the project author.
