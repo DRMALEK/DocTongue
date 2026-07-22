@@ -1,3 +1,9 @@
+"""Chat API router: POST /api/chat.
+
+Validates the incoming question against guardrails, delegates to the
+retrieval pipeline, and returns a grounded answer with citations.
+"""
+
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.config import Settings
@@ -29,6 +35,11 @@ def chat(
     chat_memory_store: ChatMemoryStore = Depends(get_chat_memory_store),
     quality_evaluator: ResponseQualityEvaluator = Depends(get_quality_evaluator),
 ) -> ChatResponse:
+    """Answer a user question grounded in the indexed document collection.
+
+    Rejects questions that trigger safety guardrails with HTTP 400.
+    Returns HTTP 500 if the retrieval pipeline raises an unexpected error.
+    """
     violation = validate_chat_question(payload.question)
     if violation:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=violation)

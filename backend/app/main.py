@@ -1,3 +1,9 @@
+"""FastAPI application factory for DocTongue.
+
+Call :func:`create_app` to construct the app with CORS middleware and
+all API routers registered under the configured ``api_prefix``.
+"""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 

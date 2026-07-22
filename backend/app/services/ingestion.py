@@ -1,3 +1,5 @@
+"""Document ingestion pipeline: upload validation, storage, PDF parsing, and chunking."""
+
 from dataclasses import dataclass
 from pathlib import Path
 import uuid
@@ -16,11 +18,22 @@ MAX_UPLOAD_BYTES = 50 * 1024 * 1024
 
 
 class DocumentProcessingError(Exception):
-    pass
+    """Raised when an uploaded document cannot be validated, stored, or parsed."""
 
 
 @dataclass(slots=True)
 class ProcessedDocument:
+    """Result of a successful document upload and processing pass.
+
+    Attributes:
+        document_id: UUID assigned to this document.
+        filename: Original filename provided by the client.
+        content_type: MIME type derived from the file extension.
+        stored_path: Absolute path where the raw file was written on disk.
+        page_count: Number of pages detected by the PDF parser.
+        chunks: Text chunks ready to be indexed in the vector store.
+    """
+
     document_id: str
     filename: str
     content_type: str
@@ -33,6 +46,24 @@ async def persist_and_process_upload(
     file: UploadFile,
     settings: Settings,
 ) -> ProcessedDocument:
+    """Validate, save, and chunk an uploaded file.
+
+    Validates the file extension and size, writes the raw bytes to
+    ``settings.uploads_dir``, extracts text with PyPDF, and runs the
+    chunking pass.  Cleans up the stored file if any step fails.
+
+    Args:
+        file: The multipart file received from the HTTP request.
+        settings: Application settings used for storage paths and chunking params.
+
+    Returns:
+        A :class:`ProcessedDocument` ready to register in the document store
+        and vector store.
+
+    Raises:
+        DocumentProcessingError: If the file is missing, empty, too large,
+            an unsupported type, unparseable, or yields no extractable text.
+    """
     filename = (file.filename or "").strip()
     if not filename:
         raise DocumentProcessingError("Uploaded files must include a filename.")
@@ -76,11 +107,24 @@ async def persist_and_process_upload(
 
 
 def delete_stored_file(path: Path) -> None:
+    """Delete *path* from disk if it exists. Safe to call on missing paths."""
     if path.exists():
         path.unlink()
 
 
 def _extract_pages(path: Path, extension: str) -> list[PageContent]:
+    """Extract page text from a supported document file.
+
+    Args:
+        path: Path to the file on disk.
+        extension: Lowercase file extension (e.g. ``".pdf"``).
+
+    Returns:
+        Ordered list of :class:`PageContent` objects, one per page.
+
+    Raises:
+        DocumentProcessingError: If the extension is not supported.
+    """
     if extension != ".pdf":
         raise DocumentProcessingError("Unsupported file type. Upload a PDF file.")
 

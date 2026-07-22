@@ -33,6 +33,11 @@ class ChatMemoryStore:
         self._redis_client = self._connect_redis(settings.redis_url)
 
     def get_recent_turns(self, session_id: str, limit: int | None = None) -> list[dict[str, str]]:
+        """Return up to *limit* recent turns for *session_id*, most-recent first.
+
+        Each turn is a dict with ``"question"`` and ``"answer"`` keys.
+        Falls back to the in-process store when Redis is unavailable.
+        """
         resolved_limit = min(limit or self._window, self._window)
         if self._redis_client is not None:
             key = self._session_key(session_id)
@@ -55,10 +60,17 @@ class ChatMemoryStore:
         return entries[:resolved_limit]
 
     def get_recent_questions(self, session_id: str, limit: int | None = None) -> list[str]:
+        """Return only the question strings from recent turns for *session_id*."""
         turns = self.get_recent_turns(session_id=session_id, limit=limit)
         return [turn["question"] for turn in turns if turn.get("question")]
 
     def append_turn(self, session_id: str, question: str, answer: str) -> None:
+        """Prepend a completed Q&A turn to the memory window for *session_id*.
+
+        The window is capped at ``chat_memory_window`` entries.  If Redis is
+        configured, the list is stored there with an optional TTL; otherwise
+        it is kept in the local in-process deque.
+        """
         payload = json.dumps({"question": question, "answer": answer}, ensure_ascii=True)
         if self._redis_client is not None:
             key = self._session_key(session_id)
@@ -76,6 +88,7 @@ class ChatMemoryStore:
             )
 
     def _connect_redis(self, redis_url: str) -> RedisClient | None:
+        """Attempt to connect to Redis at *redis_url*; return ``None`` on failure."""
         if Redis is None:
             logger.info("redis package not available, using in-process chat memory store")
             return None
@@ -89,4 +102,5 @@ class ChatMemoryStore:
             return None
 
     def _session_key(self, session_id: str) -> str:
+        """Return the namespaced Redis key for *session_id*."""
         return f"{self._key_prefix}:{session_id}"

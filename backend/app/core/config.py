@@ -1,3 +1,9 @@
+"""Application configuration loaded from environment variables via Pydantic Settings.
+
+All settings can be overridden with environment variables or a ``backend/.env`` file.
+See the project README for a full description of every variable.
+"""
+
 from functools import lru_cache
 from pathlib import Path
 

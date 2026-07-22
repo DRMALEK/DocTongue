@@ -8,6 +8,16 @@ from app.services.llm import lexical_overlap_score
 
 @dataclass
 class QualityEvaluation:
+    """Result of a single quality evaluation pass.
+
+    Attributes:
+        score: Numeric quality score in the range [0, 1].
+        passed: Whether *score* met the configured threshold.
+        method: Identifier for the evaluation method used
+            (e.g. ``"deepeval.answer_relevancy"`` or ``"lexical_overlap_fallback"``).
+        reason: Optional human-readable explanation from the judge model.
+    """
+
     score: float
     passed: bool
     method: str
@@ -33,6 +43,24 @@ class ResponseQualityEvaluator:
         contexts: list[str],
         grounded: bool,
     ) -> QualityEvaluation | None:
+        """Evaluate the quality of *answer* relative to *question* and *contexts*.
+
+        Returns ``None`` immediately when quality control is disabled via settings.
+        When deepeval is unavailable and ``quality_control_fail_open`` is ``True``,
+        falls back to a lexical-overlap heuristic instead of raising.
+
+        Args:
+            question: The original user question.
+            answer: The generated answer to evaluate.
+            contexts: Document excerpts used to ground the answer.
+            grounded: Whether the answer was produced from retrieved evidence.
+
+        Returns:
+            A :class:`QualityEvaluation` if evaluation ran, or ``None`` if disabled.
+
+        Raises:
+            Exception: Re-raises deepeval errors when ``quality_control_fail_open`` is ``False``.
+        """
         if not self._settings.quality_control_enabled:
             return None
 

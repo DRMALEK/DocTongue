@@ -137,6 +137,11 @@ def _append_chat_audit_log(
     answer: str,
     settings: Settings,
 ) -> None:
+    """Append a timestamped Q&A entry to the plain-text audit log.
+
+    Writes are serialised via :data:`AUDIT_LOG_LOCK` to be safe under
+    concurrent requests.  The parent directory is created if absent.
+    """
     timestamp = datetime.now(timezone.utc).isoformat()
     entry = (
         f"Timestamp: {timestamp}\n"

@@ -1,3 +1,9 @@
+"""Documents API router: GET/POST /api/documents and DELETE /api/documents/{id}.
+
+Handles document listing, PDF upload with ingestion, and document deletion
+including cleanup from the vector store and local filesystem.
+"""
+
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
@@ -15,6 +21,7 @@ router = APIRouter(prefix="/documents", tags=["documents"])
 
 @router.get("", response_model=DocumentListResponse)
 def list_documents(document_store: DocumentStore = Depends(get_document_store)) -> DocumentListResponse:
+    """Return the list of all currently indexed documents."""
     documents = sorted(document_store.list_documents(), key=lambda item: item.created_at, reverse=True)
     return DocumentListResponse(documents=documents)
 
@@ -26,6 +33,10 @@ async def upload_document(
     document_store: DocumentStore = Depends(get_document_store),
     vector_store: VectorStore = Depends(get_vector_store),
 ) -> DocumentUploadResponse:
+    """Upload a PDF file, chunk it, embed the chunks, and register it in the collection.
+
+    Returns HTTP 400 for invalid files and HTTP 422 if processing fails.
+    """
     try:
         processed = await persist_and_process_upload(file, settings)
         vector_store.add_document(processed.document_id, processed.filename, processed.chunks)

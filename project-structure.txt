@@ -1,10 +1,15 @@
-DocTongue-2/
+DocTongue/
 ├── .env.example
 ├── .gitignore
 ├── README.md
 ├── project-structure.txt
+├── docker-compose.yml
 ├── backend/
+│   ├── Dockerfile
+│   ├── pyproject.toml
 │   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py
 │   │   ├── api/
 │   │   │   ├── chat.py
 │   │   │   └── documents.py
@@ -13,39 +18,52 @@ DocTongue-2/
 │   │   │   └── dependencies.py
 │   │   ├── models/
 │   │   │   └── schemas.py
-│   │   ├── services/
-│   │   │   ├── chunking.py
-│   │   │   ├── document_store.py
-│   │   │   ├── ingestion.py
-│   │   │   ├── llm.py
-│   │   │   ├── retrieval.py
-│   │   │   └── vector_store.py
-│   │   ├── __init__.py
-│   │   └── main.py
+│   │   └── services/
+│   │       ├── chat_memory.py
+│   │       ├── chunking.py
+│   │       ├── document_store.py
+│   │       ├── guardrails.py
+│   │       ├── ingestion.py
+│   │       ├── llm.py
+│   │       ├── quality_control.py
+│   │       ├── retrieval.py
+│   │       └── vector_store.py
 │   ├── data/
-│   │   ├── .gitkeep
 │   │   ├── chroma/
 │   │   │   └── .gitkeep
 │   │   └── uploads/
 │   │       └── .gitkeep
-│   ├── tests/
-│   │   ├── conftest.py
-│   │   ├── test_api.py
-│   │   └── test_chunking.py
-│   └── pyproject.toml
+│   └── tests/
+│       ├── conftest.py
+│       ├── test_api.py
+│       ├── test_chunking.py
+│       ├── test_live_litellm_smoke.py
+│       ├── test_llm_provider_aliases.py
+│       ├── test_quality_control.py
+│       └── test_retrieval.py
 └── frontend/
-    ├── src/
-    │   ├── app/
-    │   │   ├── globals.css
-    │   │   ├── layout.tsx
-    │   │   └── page.tsx
-    │   ├── components/
-    │   │   ├── chat-panel.tsx
-    │   │   ├── document-panel.tsx
-    │   │   └── source-citations.tsx
-    │   └── lib/
-    │       ├── api.ts
-    │       └── types.ts
+    ├── AGENTS.md
+    ├── CLAUDE.md
+    ├── Dockerfile
+    ├── eslint.config.mjs
+    ├── next.config.ts
     ├── package.json
     ├── postcss.config.mjs
-    └── tsconfig.json
+    ├── tsconfig.json
+    ├── vitest.config.ts
+    ├── vitest.setup.ts
+    ├── public/
+    └── src/
+        ├── app/
+        │   ├── globals.css
+        │   ├── layout.tsx
+        │   ├── page.test.tsx
+        │   └── page.tsx
+        ├── components/
+        │   ├── chat-panel.tsx
+        │   ├── document-panel.tsx
+        │   ├── settings-modal.tsx
+        │   └── source-citations.tsx
+        └── lib/
+            ├── api.ts
+            └── types.ts

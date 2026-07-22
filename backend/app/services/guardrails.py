@@ -1,3 +1,9 @@
+"""Input guardrails that block prompt-injection and restricted-topic requests.
+
+Pattern matching is intentionally conservative: false positives are preferred
+over letting policy-bypass or explicit-content requests through.
+"""
+
 import re
 
 
@@ -23,6 +29,15 @@ RESTRICTED_TOPIC_PATTERN = re.compile(
 
 
 def validate_chat_question(question: str) -> str | None:
+    """Check *question* against safety guardrails.
+
+    Args:
+        question: The raw user question string.
+
+    Returns:
+        A human-readable rejection reason if the question violates a guardrail,
+        or ``None`` if the question is acceptable.
+    """
     for pattern in SYSTEM_PROMPT_OVERRIDE_PATTERNS:
         if pattern.search(question):
             return "This request is blocked by safety guardrails."

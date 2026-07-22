@@ -1,21 +1,28 @@
+"""Text chunking utilities for splitting PDF page content into overlapping text chunks."""
+
 from dataclasses import dataclass
 import re
 
 
 @dataclass(slots=True)
 class PageContent:
+    """Raw text extracted from a single PDF page."""
+
     text: str
     page_number: int | None = None
 
 
 @dataclass(slots=True)
 class TextChunk:
+    """A single text excerpt produced by the chunking pass."""
+
     content: str
     chunk_index: int
     page_number: int | None = None
 
 
 def normalize_text(text: str) -> str:
+    """Collapse runs of whitespace in *text* to a single space and strip leading/trailing whitespace."""
     collapsed = re.sub(r"\s+", " ", text).strip()
     return collapsed
 
@@ -25,6 +32,22 @@ def split_pages_into_chunks(
     chunk_size: int,
     chunk_overlap: int,
 ) -> list[TextChunk]:
+    """Split a list of pages into overlapping fixed-size text chunks.
+
+    Chunks are split at the nearest word boundary within *chunk_size* characters.
+    Consecutive chunks share *chunk_overlap* characters to preserve context at boundaries.
+
+    Args:
+        pages: Ordered list of page content objects to chunk.
+        chunk_size: Maximum character length of each chunk.
+        chunk_overlap: Number of characters to re-include from the end of the previous chunk.
+
+    Returns:
+        Ordered list of :class:`TextChunk` objects with sequential ``chunk_index`` values.
+
+    Raises:
+        ValueError: If *chunk_size* is zero or *chunk_overlap* is out of range.
+    """
     if chunk_size <= 0:
         raise ValueError("chunk_size must be greater than zero")
     if chunk_overlap < 0 or chunk_overlap >= chunk_size:
