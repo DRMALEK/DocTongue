@@ -169,15 +169,19 @@ export default function Home() {
         </div>
       </section>
       {/* User badge */}
-      <div className="fixed bottom-4 left-4 z-50 flex items-center gap-2.5 rounded-full border border-[var(--dt-border-inner)] bg-[var(--dt-bg-panel)] px-3 py-1.5 shadow-lg">
-        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-xs font-bold text-white">
-          A
+      <div className="pointer-events-none fixed inset-x-0 bottom-4 z-50">
+        <div className="mx-auto flex w-full max-w-[1600px] px-3 sm:px-4">
+          <div className="pointer-events-auto flex items-center gap-2.5 rounded-full border border-[var(--dt-border-inner)] bg-[var(--dt-bg-panel)] px-3 py-1.5 shadow-lg">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-xs font-bold text-white">
+              A
+            </div>
+            <div className="leading-tight">
+              <p className="text-xs font-semibold text-[var(--dt-text-primary)]">Alex Carter</p>
+              <p className="text-[10px] text-[var(--dt-text-muted)]">Pro plan</p>
+            </div>
+            <span className="ml-0.5 h-2 w-2 rounded-full bg-emerald-400" title="Online" />
+          </div>
         </div>
-        <div className="leading-tight">
-          <p className="text-xs font-semibold text-[var(--dt-text-primary)]">Alex Carter</p>
-          <p className="text-[10px] text-[var(--dt-text-muted)]">Pro plan</p>
-        </div>
-        <span className="ml-0.5 h-2 w-2 rounded-full bg-emerald-400" title="Online" />
       </div>
     </main>
   );

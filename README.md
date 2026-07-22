@@ -1,13 +1,13 @@
 # DocTongue
 
-![DocTongue intro image](intro.png)
+![DocTongue intro image](dashboard.png)
 
 DocTongue is a simple full-stack document Q&A application. Users upload PDFs into a shared collection, ask questions in a chat-style interface, and receive answers grounded only in retrieved document content with visible supporting evidence.
 
 ## Example
 
 
-<video controls src="simplescreenrecorder-2026-07-22_15.16.26.mp4"></video>
+<video controls src="simplescreenrecorder-2026-07-22_15.30.13.mp4"></video>
 
 If your Markdown viewer does not support embedded video, open the recording directly: [Demo video](simplescreenrecorder-2026-07-22_15.16.26.mp4)
 
