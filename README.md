@@ -41,7 +41,7 @@ See `project-structure.txt` for the concise file organization.
 
 ## Environment variables
 
-Copy `.env.example` to `.env` at the repository root and adjust values as needed.
+Copy `.env.example` to `backend/.env` and adjust values as needed.
 
 For local development in a dev container, leave `NEXT_PUBLIC_API_BASE_URL` empty and use `BACKEND_API_BASE_URL=http://127.0.0.1:8000` so the Next.js dev server proxies browser requests to FastAPI.
 
@@ -98,7 +98,8 @@ The repository includes Dockerfiles for both apps and a root `docker-compose.yml
 
 - `frontend` on `http://localhost:3000`
 - `backend` on `http://localhost:8000`
-- `redis` on an internal network for chat memory
+
+By default, the backend uses its in-process chat memory fallback so the Compose stack does not require a separate Redis container.
 
 From the repository root:
 
@@ -128,7 +129,9 @@ Notes:
 
 - Backend document/chroma/audit storage is persisted from `./backend/data` to `/app/data` in the backend container.
 - `frontend` uses `BACKEND_API_BASE_URL=http://backend:8000` inside Compose so `/api/*` requests resolve to the backend service.
+- The frontend rewrite target is compiled during image build. If you change `BACKEND_API_BASE_URL`, rebuild the frontend image (`docker compose up --build`).
 - Provider credentials such as `OPENAI_API_KEY`, `LLM_API_KEY`, and `EMBEDDING_API_KEY` can be exported in your shell (or set in a local `.env`) before running Compose.
+- If you want Redis-backed chat memory, run a Redis container separately and set `REDIS_URL` accordingly.
 
 ## Local setup
 
