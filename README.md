@@ -1,7 +1,5 @@
 # DocTongue
 
-![DocTongue intro image](assets/dashboard.png)
-
 ## Table of Contents
 
 - [1) Project Description](#1-project-description)
