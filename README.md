@@ -176,5 +176,5 @@ If embedded playback is unsupported, open: [Demo video](assets/simplescreenrecor
 
 ## 10) Licence
 
-No licence file is defined yet in this repository.
+MIT License - Use as a template for your own rag applications!
 
